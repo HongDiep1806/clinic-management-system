@@ -1,6 +1,7 @@
 ﻿namespace ClinicManagementSystem.Services
 {
-    public class IRoleService
+    public interface IRoleService
     {
+        Task<string> GetRoleNameById(int roleId);
     }
 }

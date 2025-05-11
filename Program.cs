@@ -39,6 +39,14 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+            builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            builder.Services.AddHttpContextAccessor();
+
 
             var app = builder.Build();
 

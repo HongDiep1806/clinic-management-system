@@ -27,5 +27,19 @@ namespace ClinicManagementSystem.Services
             };
             await _userRoleRepository.Create(userRole);
         }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+            if (user == null)
+            {
+                throw new UnauthorizedAccessException("Invalid credentials");
+
+            }
+            else
+            {
+                return user;
+            }   
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace ClinicManagementSystem.Models
         public string Address { get; set; }
         public string Email { get; set; }
         public string HashPassword { get; set; }
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
@@ -26,6 +26,8 @@ namespace ClinicManagementSystem.Models
 
         public ICollection<Schedule> Schedules { get; set; }
         public ICollection<UserRole> UserRoles { get; set; }
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
+
     }
 
 }

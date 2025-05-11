@@ -1,5 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using ClinicManagementSystem.DAL;
+using ClinicManagementSystem.Models;
+using Microsoft.AspNetCore.Identity;
+using ClinicManagementSystem.Mappings;
+using MediatR;
+using ClinicManagementSystem.Repositories;
+using ClinicManagementSystem.Services;
 
 namespace ClinicManagementSystem
 {
@@ -21,6 +27,18 @@ namespace ClinicManagementSystem
             builder.Services.AddDbContext<RestoreDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("RestoreConnection")));
 
+            // Add Identity and AutoMapper
+            builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(typeof(UserProfile));
+
+            // Add MediatR
+            builder.Services.AddMediatR(typeof(Program));
+
+            // Register custom services
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
             var app = builder.Build();
 

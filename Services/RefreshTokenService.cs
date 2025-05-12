@@ -1,6 +1,7 @@
 ﻿
 using ClinicManagementSystem.Models;
 using ClinicManagementSystem.Repositories;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ClinicManagementSystem.Services
 {
@@ -11,6 +12,18 @@ namespace ClinicManagementSystem.Services
         {
             _refreshTokenRepository = refreshTokenRepository;
         }
+
+        public async Task RevokeToken(string token, string? ipAddress)
+        {
+            var refreshToken = await _refreshTokenRepository.GetByToken(token);
+            if (refreshToken == null || !refreshToken.IsActive)
+                throw new SecurityTokenException("Invalid or expired refresh token.");
+
+            refreshToken.RevokedAt = DateTime.UtcNow;
+            refreshToken.RevokedByIp = ipAddress;
+            await _refreshTokenRepository.Update(refreshToken.Id ,refreshToken);
+        }
+
         public async Task SaveRefreshToken(int userId, string token, string ipAddress)
         {
             await _refreshTokenRepository.Create(new RefreshToken

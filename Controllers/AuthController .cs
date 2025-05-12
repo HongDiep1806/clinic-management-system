@@ -22,5 +22,11 @@ namespace ClinicManagementSystem.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(new { message = "Logged out successfully." });
+        }
     }
 }

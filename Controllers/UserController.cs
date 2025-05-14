@@ -1,5 +1,6 @@
 ﻿using ClinicManagementSystem.DTOs.User;
 using ClinicManagementSystem.Features.Users.Commands;
+using ClinicManagementSystem.Features.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,20 @@ namespace ClinicManagementSystem.Controllers
             };
 
             var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+        [HttpGet("get-all-patients")]
+        public async Task<IActionResult> GetAllPatients()
+        {
+            var query = new GetAllPatientsQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+        [HttpGet("get-all-doctors")]
+        public async Task<IActionResult> GetAllDoctors()
+        {
+            var query = new GetAllDoctorsQuery();
+            var result = await _mediator.Send(query);
             return Ok(result);
         }
     }

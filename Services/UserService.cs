@@ -8,7 +8,7 @@ namespace ClinicManagementSystem.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserRoleRepository _userRoleRepository;   
+        private readonly IUserRoleRepository _userRoleRepository;
         public UserService(IUserRepository userRepository, IUserRoleRepository userRoleRepository)
         {
             _userRepository = userRepository;
@@ -39,7 +39,17 @@ namespace ClinicManagementSystem.Services
             else
             {
                 return user;
-            }   
+            }
+        }
+
+        public async Task<List<User>> GetAllPatients()
+        {
+            return await _userRepository.GetPatientUsers();
+        }
+
+        public async Task<List<User>> GetAllDoctors()
+        {
+            return await _userRepository.GetDoctorUsers();  
         }
     }
 }

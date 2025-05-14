@@ -31,5 +31,24 @@ namespace ClinicManagementSystem.Repositories
                 .Include(u => u.RefreshTokens)
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public async Task<List<User>> GetDoctorUsers()
+        {
+            return await _context.Set<User>()
+               .Include(u => u.UserRoles)
+                   .ThenInclude(ur => ur.Role)
+               .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Doctor"))
+               .ToListAsync();
+        }
+
+        public async Task<List<User>> GetPatientUsers()
+        {
+            return await _context.Set<User>()
+                .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Patient"))
+                .ToListAsync();
+        }
+
     }
 }

@@ -14,5 +14,20 @@ namespace ClinicManagementSystem.Services
         {
            return await _appointmentRepository.Create(appointment);
         }
+
+        public async Task<List<Appointment>> GetAllAppointments()
+        {
+            return await _appointmentRepository.GetAll();
+        }
+
+        public async Task<Appointment> GetAppointmentById(int appointmentId)
+        {
+            return await _appointmentRepository.GetById(appointmentId);
+        }
+
+        public async Task<bool> UpdateAppointment(Appointment appointment, int appointmentId)
+        {
+            return await _appointmentRepository.Update(appointmentId, appointment);
+        }
     }
 }

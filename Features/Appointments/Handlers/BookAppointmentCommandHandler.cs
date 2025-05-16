@@ -23,10 +23,10 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
         {
             var appointment = new Appointment
             {
-                PatientId = request.PatientId,
-                DoctorId = request.DoctorId,
-                AppointmentDate = request.AppointmentDate,
-                Status = "Pending"
+                PatientId = request.RequestDto.PatientId,
+                DoctorId = request.RequestDto.DoctorId,
+                AppointmentDate = request.RequestDto.AppointmentDate,
+                Status = AppointmentStatus.Pending
             };
 
             var newAppointment = await _appointmentService.CreateAppointment(appointment);

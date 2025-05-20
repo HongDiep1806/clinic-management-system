@@ -11,5 +11,7 @@ namespace ClinicManagementSystem.Models.Deleted
         public string Unit { get; set; }
         public int QuantityInStock { get; set; }
         public float Price { get; set; }
+        public DateTime DeletedAt { get; set; } = DateTime.UtcNow;
+
     }
 }

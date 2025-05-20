@@ -9,6 +9,9 @@ namespace ClinicManagementSystem.Services
         Task<User> GetUserByEmail(string email);
         Task<List<User>> GetAllPatients();
         Task<List<User>> GetAllDoctors();
+        Task<User> GetUserById(int userId);
+        Task<bool> DoesDoctorExits(int doctorId);
+        Task<bool> DoesPatientExists(int patientId);    
 
     }
 }

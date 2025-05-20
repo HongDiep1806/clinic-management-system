@@ -51,5 +51,19 @@ namespace ClinicManagementSystem.Services
         {
             return await _userRepository.GetDoctorUsers();  
         }
+
+        public async Task<User> GetUserById(int userId)
+        {
+            return await _userRepository.GetById(userId);
+        }
+
+        public Task<bool> DoesDoctorExits(int doctorId)
+        {
+            return _userRepository.DoesDoctorExits(doctorId);
+        }
+        public Task<bool> DoesPatientExists(int patientId)
+        {
+            return _userRepository.DoesPatientExists(patientId);
+        }
     }
 }

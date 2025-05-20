@@ -17,12 +17,23 @@ namespace ClinicManagementSystem.Services
 
         public async Task<List<Appointment>> GetAllAppointments()
         {
-            return await _appointmentRepository.GetAll();
+            return await _appointmentRepository.GetAllWithIncludes();
         }
 
         public async Task<Appointment> GetAppointmentById(int appointmentId)
         {
             return await _appointmentRepository.GetById(appointmentId);
+        }
+
+        public async Task<List<Appointment>> GetDoctorAppointments(int doctorId, DateTime? date)
+        {
+            return await _appointmentRepository.GetDoctorAppointments(doctorId, date);
+        }
+
+        public async Task<List<Appointment>> GetPatientAppointments(int patientId, DateTime? date)
+        {
+            return await _appointmentRepository.GetPatientAppointments(patientId, date);
+
         }
 
         public async Task<bool> UpdateAppointment(Appointment appointment, int appointmentId)

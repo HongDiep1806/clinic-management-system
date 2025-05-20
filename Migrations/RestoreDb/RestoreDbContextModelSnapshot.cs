@@ -150,6 +150,9 @@ namespace ClinicManagementSystem.Migrations.RestoreDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DeletedMedicineId"));
 
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("MedicineId")
                         .HasColumnType("int");
 

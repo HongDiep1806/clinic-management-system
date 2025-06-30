@@ -21,28 +21,50 @@ namespace ClinicManagementSystem.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Appointment>> GetDoctorAppointments(int doctorId, DateTime? date)
+        public async Task<List<Appointment>> GetDoctorAppointments(int doctorId)
         {
             var appointments = await GetAllWithIncludes();
-            if (date.HasValue)
-            {
-                var targetDate = date.Value.Date;
-                appointments = appointments.Where(a => a.AppointmentDate == targetDate && a.DoctorId == doctorId).ToList();
-            }
+
+            appointments = appointments.Where(a => a.DoctorId == doctorId).ToList();
+
             return appointments;
 
         }
 
-        public async Task<List<Appointment>> GetPatientAppointments(int patientId, DateTime? date)
+        public async Task<List<Appointment>> GetPatientAppointments(int patientId)
         {
             var appointments = await GetAllWithIncludes();
-            if (date.HasValue)
-            {
-                var targetDate = date.Value.Date;
-                appointments = appointments.Where(a => a.AppointmentDate == targetDate && a.PatientId == patientId).ToList();
-            }
+
+            appointments = appointments.Where(a => a.PatientId == patientId).ToList();
+
             return appointments;
         }
+
+        public async Task<bool> IsPatientAppointmentConflict(int patientId, DateTime dateTime)
+        {
+            return await _context.Appointments.AnyAsync(a =>
+                    a.PatientId == patientId &&
+                    a.AppointmentDate == dateTime &&
+                    a.Status != AppointmentStatus.Cancelled);
+        }
+        public static TimeSpan SlotDuration = TimeSpan.FromMinutes(30);
+
+        public async Task<bool> IsDoctorAppointmentConflict(int doctorId, DateTime dateTime)
+        {
+            var sameDayAppointments = await _context.Appointments
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.Status != AppointmentStatus.Cancelled &&
+                    a.AppointmentDate.Date == dateTime.Date)
+                .ToListAsync();
+
+            return sameDayAppointments.Any(a =>
+                a.AppointmentDate <= dateTime &&
+                dateTime < a.AppointmentDate + SlotDuration);
+        }
+
+
+
     }
 
 }

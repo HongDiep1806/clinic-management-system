@@ -3,14 +3,13 @@ using ClinicManagementSystem.Features.Medicines.Commands;
 using ClinicManagementSystem.Features.Medicines.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin, Doctor")]
+    [Authorize(Roles = "Admin, Receptionist")]
     public class MedicineController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -18,6 +17,7 @@ namespace ClinicManagementSystem.Controllers
         {
             _mediator = mediator;
         }
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

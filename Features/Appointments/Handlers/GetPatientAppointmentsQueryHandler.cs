@@ -25,7 +25,7 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
             if (!doctorExists)
                 throw new ArgumentException("Patient not found");
 
-            var appointments = await _appointmentService.GetPatientAppointments(request.RequestDto.PatientId, request.RequestDto.Date);
+            var appointments = await _appointmentService.GetPatientAppointments(request.RequestDto.PatientId);
             var patientAppointments = _mapper.Map<List<PatientAppointmentResponseDto>>(appointments);
 
             return patientAppointments;

@@ -10,5 +10,6 @@ namespace ClinicManagementSystem.Repositories
         Task<List<User>> GetDoctorUsers();  
         Task<bool> DoesDoctorExits(int doctorId);
         Task<bool> DoesPatientExists(int patientId);
+        Task<List<User>> GetUsersByRole(string roleName);
     }
 }

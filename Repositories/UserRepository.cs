@@ -1,7 +1,9 @@
-﻿using ClinicManagementSystem.DAL;
+﻿using Azure.Core;
+using ClinicManagementSystem.DAL;
 using ClinicManagementSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace ClinicManagementSystem.Repositories
 {
@@ -76,5 +78,14 @@ namespace ClinicManagementSystem.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<User>> GetUsersByRole(string roleName)
+        {
+            var users = await _context.Set<User>()  
+                                       .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                                       .Include(u => u.Department)
+                                       .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName.ToLower() == roleName.ToLower()))
+                                       .ToListAsync();
+            return users;
+        }
     }
 }

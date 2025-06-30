@@ -1,4 +1,5 @@
 ﻿
+
 using ClinicManagementSystem.DAL;
 using Microsoft.EntityFrameworkCore;
 

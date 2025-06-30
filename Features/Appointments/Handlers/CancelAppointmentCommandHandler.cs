@@ -18,13 +18,11 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
         public async Task<bool> Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
         {
             var appointment = await _appointmentService.GetAppointmentById(request.AppointmentId);
-            // business login valid
             if (appointment == null || appointment.PatientId != request.PatientId)
                 throw new UnauthorizedAccessException("You are not allowed to cancel this appointment.");
 
             if (appointment.Status == AppointmentStatus.Completed || appointment.Status == AppointmentStatus.Cancelled || appointment.Status==AppointmentStatus.Confirmed)
                 throw new InvalidOperationException("Appointment cannot be cancelled at this stage.");
-            //
             appointment.Status = AppointmentStatus.Cancelled;
             return await _appointmentService.UpdateAppointment(appointment, request.AppointmentId);
         }

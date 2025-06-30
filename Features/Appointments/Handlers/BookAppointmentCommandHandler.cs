@@ -19,13 +19,16 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
             _appointmentService = appointmentService;
         }
 
-        public async Task<BookAppointmentResponseDto> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
+        public async Task<BookAppointmentResponseDto> Handle(BookAppointmentCommand request, 
+            CancellationToken cancellationToken)
         {
+            var appointmentDateTime = request.RequestDto.Date.Date + request.RequestDto.Time;
+
             var appointment = new Appointment
             {
                 PatientId = request.RequestDto.PatientId,
                 DoctorId = request.RequestDto.DoctorId,
-                AppointmentDate = request.RequestDto.AppointmentDate,
+                AppointmentDate = appointmentDateTime,
                 Status = AppointmentStatus.Pending
             };
 
@@ -33,4 +36,6 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
             return _mapper.Map<BookAppointmentResponseDto>(newAppointment);
         }
     }
+
 }
+

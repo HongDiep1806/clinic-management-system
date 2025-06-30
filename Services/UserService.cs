@@ -65,5 +65,10 @@ namespace ClinicManagementSystem.Services
         {
             return _userRepository.DoesPatientExists(patientId);
         }
+
+        public async Task<List<User>> GetUsersByRole(string roleName)
+        {
+            return await _userRepository.GetUsersByRole(roleName);
+        }
     }
 }

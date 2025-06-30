@@ -65,6 +65,8 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
             builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+            builder.Services.AddScoped<IScheduleService, ScheduleService>();
+            builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
             builder.Services.AddHttpContextAccessor();
 
             //

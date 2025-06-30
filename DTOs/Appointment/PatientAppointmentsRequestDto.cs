@@ -3,7 +3,7 @@
     public class PatientAppointmentsRequestDto
     {
         public int PatientId { get; set; } 
-        public DateTime? Date { get; set; }
+        //public DateTime? Date { get; set; }
     }
 
 }

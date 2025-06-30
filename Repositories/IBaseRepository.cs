@@ -1,4 +1,6 @@
-﻿namespace ClinicManagementSystem.Repositories
+﻿
+
+namespace ClinicManagementSystem.Repositories
 {
     public interface IBaseRepository<T> where T: class
     {
@@ -9,3 +11,5 @@
         Task<bool> Delete(int id);
     }
 }
+
+

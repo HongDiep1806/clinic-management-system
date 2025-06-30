@@ -55,6 +55,10 @@ namespace ClinicManagementSystem.DAL
                 .HasConversion(
                     v => v.ToString(),
                     v => (PaymentMethod)Enum.Parse(typeof(PaymentMethod), v));
+            modelBuilder.Entity<Schedule>()
+                .Property(s => s.DayOfWeek)
+                .HasConversion<string>();
+
 
 
         }

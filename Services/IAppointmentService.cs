@@ -1,4 +1,5 @@
-﻿using ClinicManagementSystem.Models;
+﻿using ClinicManagementSystem.DTOs.Appointment;
+using ClinicManagementSystem.Models;
 
 namespace ClinicManagementSystem.Services
 {
@@ -8,8 +9,12 @@ namespace ClinicManagementSystem.Services
         Task<Appointment> GetAppointmentById(int appointmentId);
         Task<List<Appointment>> GetAllAppointments();
         Task<bool> UpdateAppointment (Appointment appointment, int appointmentId);
-        Task<List<Appointment>> GetDoctorAppointments(int doctorId, DateTime? date);
-        Task<List<Appointment>> GetPatientAppointments(int patientId, DateTime? date);
+        Task<List<Appointment>> GetDoctorAppointments(int doctorId);
+        Task<List<Appointment>> GetPatientAppointments(int patientId);
+        Task<Appointment> CreateAppointmentByStaff(CreateAppointmentByStaffDto dto);
+        Task<bool> IsPatientAppointmentConflict(int patientId, DateTime dateTime);
+
+
 
     }
 }

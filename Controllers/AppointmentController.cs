@@ -20,7 +20,7 @@ namespace ClinicManagementSystem.Controllers
             _mediator = mediator;
         }
         [HttpGet("get-all-appointments")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<IActionResult> GetAllAppointments()
         {
             var query = new GetAllAppointmentsQuery();
@@ -29,7 +29,7 @@ namespace ClinicManagementSystem.Controllers
         }
 
         [HttpPost("book")]
-        [Authorize(Roles = "Patient, Admin")]
+        [Authorize(Roles = "Patient, Admin, Receptionist")]
         public async Task<IActionResult> Book([FromBody] BookAppointmentRequestDto dto)
         {
             var command = new BookAppointmentCommand(dto);
@@ -59,12 +59,25 @@ namespace ClinicManagementSystem.Controllers
             return Ok(result);
         }
         [HttpPut("{id}/cancel")]
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "Patient, Receptionist")]
         public async Task<IActionResult> Cancel(int id)
         {
             var patientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var result = await _mediator.Send(new CancelAppointmentCommand(id, patientId));
             return result ? Ok(new { message = "Appointment cancelled." }) : BadRequest();
+        }
+        [HttpPost("staff/create")]
+        public async Task<IActionResult> CreateAppointmentByStaff([FromBody] CreateAppointmentByStaffDto dto)
+        {
+            var result = await _mediator.Send(new CreateAppointmentByStaffCommand(dto));
+            return Ok(result);
+        }
+        [HttpPost("staff/cancel")]
+        [Authorize(Roles = "Admin, Receptionist")]
+        public async Task<IActionResult> CancelAppointmentByStaff([FromBody] int appointmentId)
+        {
+            var result = await _mediator.Send(new CancelAppointmentByStaffCommand(appointmentId));
+            return result ? Ok("Appointment cancelled.") : BadRequest("Failed to cancel appointment.");
         }
 
     }

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagementSystem.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Doctor")]
     [ApiController]
     [Route("api/[controller]")]
     public class PrescriptionController : ControllerBase

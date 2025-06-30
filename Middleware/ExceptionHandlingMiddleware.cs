@@ -19,7 +19,7 @@ namespace ClinicManagementSystem.Middleware
         {
             try
             {
-                await _next(context); // Cho request đi tiếp
+                await _next(context);
             }
             catch (ValidationException ex)
             {

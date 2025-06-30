@@ -12,3 +12,5 @@ namespace ClinicManagementSystem.Features.Appointments.Commands
         }
     }
 }
+
+

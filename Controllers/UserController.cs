@@ -42,5 +42,11 @@ namespace ClinicManagementSystem.Controllers
             var result = await _mediator.Send(query);
             return Ok(result);
         }
+        [HttpGet("get-users-by-role")]
+        public async Task<IActionResult> GetUsersByRole([FromQuery] string roleName)
+        {
+            var result = await _mediator.Send(new GetUsersByRoleQuery(roleName));
+            return Ok(result);
+        }
     }
 }

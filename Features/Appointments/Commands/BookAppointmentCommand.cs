@@ -5,8 +5,12 @@ namespace ClinicManagementSystem.Features.Appointments.Commands
 {
     public class BookAppointmentCommand : IRequest<BookAppointmentResponseDto>
     {
-        public int PatientId { get; set; }
-        public int DoctorId { get; set; }
-        public DateTime AppointmentDate { get; set; }
+        public BookAppointmentRequestDto RequestDto { get; set; }
+        public BookAppointmentCommand(BookAppointmentRequestDto dto)
+        {
+            RequestDto = dto;
+        }
     }
 }
+
+

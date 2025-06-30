@@ -1,6 +1,7 @@
 ﻿
 using ClinicManagementSystem.Models;
 using ClinicManagementSystem.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace ClinicManagementSystem.Services
@@ -35,6 +36,11 @@ namespace ClinicManagementSystem.Services
                 RevokedAt = null,
                 CreatedByIp = ipAddress
             });
+        }
+
+        public async Task<int?> ValidateRefreshToken(string refreshToken, string? ipAddress)
+        {
+           return await _refreshTokenRepository.ValidateRefreshToken(refreshToken, ipAddress);
         }
     }
 }

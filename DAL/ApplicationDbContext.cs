@@ -45,6 +45,21 @@ namespace ClinicManagementSystem.DAL
                 .WithOne(t => t.User)
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Appointment>()
+                .Property(a => a.Status)
+                .HasConversion(
+                  v => v.ToString(),
+                  v => (AppointmentStatus)Enum.Parse(typeof(AppointmentStatus), v));
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.PaymentMethod)
+                .HasConversion(
+                    v => v.ToString(),
+                    v => (PaymentMethod)Enum.Parse(typeof(PaymentMethod), v));
+            modelBuilder.Entity<Schedule>()
+                .Property(s => s.DayOfWeek)
+                .HasConversion<string>();
+
+
 
         }
 

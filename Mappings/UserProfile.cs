@@ -26,6 +26,11 @@ namespace ClinicManagementSystem.Mappings
                 .ForMember(dest => dest.HashPassword, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+
+            CreateMap<User, UserSummaryDto>()
+                .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.UserRoles.First().Role.RoleName))
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : null));
+
         }
     }
 }

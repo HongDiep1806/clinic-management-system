@@ -28,5 +28,12 @@ namespace ClinicManagementSystem.Controllers
             await _mediator.Send(command);
             return Ok(new { message = "Logged out successfully." });
         }
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
     }
 }

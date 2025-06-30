@@ -19,18 +19,23 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
             _appointmentService = appointmentService;
         }
 
-        public async Task<BookAppointmentResponseDto> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
+        public async Task<BookAppointmentResponseDto> Handle(BookAppointmentCommand request, 
+            CancellationToken cancellationToken)
         {
+            var appointmentDateTime = request.RequestDto.Date.Date + request.RequestDto.Time;
+
             var appointment = new Appointment
             {
-                PatientId = request.PatientId,
-                DoctorId = request.DoctorId,
-                AppointmentDate = request.AppointmentDate,
-                Status = "Pending"
+                PatientId = request.RequestDto.PatientId,
+                DoctorId = request.RequestDto.DoctorId,
+                AppointmentDate = appointmentDateTime,
+                Status = AppointmentStatus.Pending
             };
 
             var newAppointment = await _appointmentService.CreateAppointment(appointment);
             return _mapper.Map<BookAppointmentResponseDto>(newAppointment);
         }
     }
+
 }
+

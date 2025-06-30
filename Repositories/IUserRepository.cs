@@ -8,6 +8,8 @@ namespace ClinicManagementSystem.Repositories
         Task<bool> CheckPasswordAsync(User user, string password);
         Task<List<User>> GetPatientUsers();
         Task<List<User>> GetDoctorUsers();  
-
+        Task<bool> DoesDoctorExits(int doctorId);
+        Task<bool> DoesPatientExists(int patientId);
+        Task<List<User>> GetUsersByRole(string roleName);
     }
 }

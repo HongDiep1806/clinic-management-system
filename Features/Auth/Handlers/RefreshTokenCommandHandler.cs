@@ -44,7 +44,7 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             await _refreshTokenService.RevokeToken(request.RefreshToken, ipAddress);
             await _refreshTokenService.SaveRefreshToken(user.UserId, newRefreshToken, ipAddress);
             var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow.AddMinutes(15), vnZone);
+            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow.AddMinutes(5), vnZone);
 
 
             return new LoginResponseDto

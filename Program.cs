@@ -27,6 +27,18 @@ namespace ClinicManagementSystem
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowVueApp",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5173") // địa chỉ của frontend Vue
+                              .AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowCredentials();
+                    });
+            });
+
             // Add DbContext
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -67,6 +79,10 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IInvoiceService, InvoiceService>();
             builder.Services.AddScoped<IScheduleService, ScheduleService>();
             builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+
             builder.Services.AddHttpContextAccessor();
 
             //
@@ -115,6 +131,8 @@ namespace ClinicManagementSystem
             ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
             ValidAudience = builder.Configuration["JwtSettings:Audience"],
             ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
         };
@@ -142,6 +160,8 @@ namespace ClinicManagementSystem
 
 
             var app = builder.Build();
+            app.UseCors("AllowVueApp");
+
 
             if (app.Environment.IsDevelopment())
             {

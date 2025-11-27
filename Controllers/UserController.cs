@@ -2,12 +2,15 @@
 using ClinicManagementSystem.Features.Users.Commands;
 using ClinicManagementSystem.Features.Users.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClinicManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Doctor,Admin,Receptionist")]
+
     public class UserController : ControllerBase
     {
         private readonly IMediator _mediator;

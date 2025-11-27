@@ -33,10 +33,10 @@ namespace ClinicManagementSystem.Features.Users.Handlers
             {
                 throw new ArgumentException($"Invalid RoleId: {request.CreateUserDto.RoleId}");
             }
-            else if (!roleName.ToLower().Equals("Doctor"))
-            {
-                user.DepartmentId = null;
-            }
+            //else if (!roleName.ToLower().Equals("Doctor"))
+            //{
+            //    user.DepartmentId = null;
+            //}
             var newUser = await _userService.CreateUser(user);
             await _userService.AssignRoleToUser(newUser.UserId, request.CreateUserDto.RoleId);
             var userDto = _mapper.Map<UserDto>(newUser);

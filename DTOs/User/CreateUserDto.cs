@@ -16,7 +16,7 @@
 
         public string Password { get; set; }
 
-        public int? DepartmentId { get; set; } = null;
+        public int? DepartmentId { get; set; }
 
         public int RoleId { get; set; } 
     }

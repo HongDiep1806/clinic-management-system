@@ -8,5 +8,9 @@ namespace ClinicManagementSystem.Repositories
         Task<List<Schedule>> GetSchedulesByDoctorId(int doctorId);
         Task<bool> IsDoctorScheduleOverlapping(Schedule schedule);
         Task<Schedule?> GetDoctorScheduleAtTime(int doctorId, WeekDay day, TimeSpan time);
+        Task<List<User>> GetDoctorsByWeekday(WeekDay weekday);
+        Task<Schedule?> GetDoctorScheduleAtDay(int doctorId, WeekDay day);
+
+
     }
 }

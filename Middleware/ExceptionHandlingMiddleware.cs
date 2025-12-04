@@ -56,9 +56,23 @@ namespace ClinicManagementSystem.Middleware
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Unhandled exception");
+                context.Response.ContentType = "application/json";
+
+                if (ex is BadHttpRequestException badReq)
+                {
+                    context.Response.StatusCode = badReq.StatusCode;
+
+                    var response409 = new
+                    {
+                        message = badReq.Message,
+                        status = badReq.StatusCode
+                    };
+
+                    await context.Response.WriteAsync(JsonSerializer.Serialize(response409));
+                    return;
+                }
 
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                context.Response.ContentType = "application/json";
 
                 var response = new
                 {

@@ -7,6 +7,6 @@ namespace ClinicManagementSystem.Repositories
     {
         Task<List<string>> GetUserRoles(int userId);
 
-        
+
     }
 }

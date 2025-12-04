@@ -17,6 +17,8 @@ namespace ClinicManagementSystem.Models.Deleted
         public int DepartmentId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public string RoleName { get; set; }
+
     }
 
 }

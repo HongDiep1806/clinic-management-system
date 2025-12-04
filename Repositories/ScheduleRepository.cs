@@ -39,6 +39,27 @@ namespace ClinicManagementSystem.Repositories
                 schedule.StartTime < s.EndTime
             );
         }
+        public async Task<List<User>> GetDoctorsByWeekday(WeekDay weekday)
+        {
+            return await _context.Schedules
+                .Where(s => s.DayOfWeek == weekday)
+                .Include(s => s.Doctor)               
+                    .ThenInclude(d => d.Schedules)    
+                .Select(s => s.Doctor)
+                .Distinct()
+                .ToListAsync();
+        }
+
+        public async Task<Schedule?> GetDoctorScheduleAtDay(int doctorId, WeekDay day)
+        {
+            return await _context.Schedules
+                .FirstOrDefaultAsync(s =>
+                    s.DoctorId == doctorId &&
+                    s.DayOfWeek == day
+                );
+        }
+
+
 
     }
 

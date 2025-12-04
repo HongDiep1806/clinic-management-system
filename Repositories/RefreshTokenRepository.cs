@@ -13,24 +13,28 @@ namespace ClinicManagementSystem.Repositories
         public async Task<RefreshToken> GetByToken(string token)
         {
             return await _context.RefreshTokens
-                .FirstOrDefaultAsync(rt => rt.Token.ToLower().Equals( token));
+                .FirstOrDefaultAsync(rt => rt.Token == token);
         }
 
-        public async Task<int?> ValidateRefreshToken(string refreshToken, string? ipAddress)
+        public async Task<int?> ValidateRefreshToken(string token, string? ipAddress)
         {
-            var token = await _context.RefreshTokens
-               .FirstOrDefaultAsync(t =>
-                t.Token == refreshToken &&
-                t.RevokedAt == null &&
-                t.ExpiresAt > DateTime.UtcNow);
+            var rt = await _context.RefreshTokens
+                .FirstOrDefaultAsync(t =>
+                    t.Token == token &&
+                    t.RevokedAt == null &&
+                    t.ExpiresAt > DateTime.UtcNow
+                );
 
-            if (token == null)
-                return null;
-            if (!string.IsNullOrEmpty(ipAddress) && token.CreatedByIp != ipAddress)
+            if (rt == null)
                 return null;
 
-            return token.UserId;
+            // ❗ Loại bỏ IP-check để không bị auto logout
+            // if (!string.IsNullOrEmpty(ipAddress) && rt.CreatedByIp != ipAddress)
+            //     return null;
+
+            return rt.UserId;
         }
+
 
     }
 

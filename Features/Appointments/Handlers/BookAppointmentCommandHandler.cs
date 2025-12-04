@@ -8,7 +8,8 @@ using MediatR;
 
 namespace ClinicManagementSystem.Features.Appointments.Handlers
 {
-    public class BookAppointmentCommandHandler : IRequestHandler<BookAppointmentCommand, BookAppointmentResponseDto>
+    public class BookAppointmentCommandHandler
+        : IRequestHandler<BookAppointmentCommand, BookAppointmentResponseDto>
     {
         private readonly IAppointmentService _appointmentService;
         private readonly IMapper _mapper;
@@ -19,21 +20,23 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
             _appointmentService = appointmentService;
         }
 
-        public async Task<BookAppointmentResponseDto> Handle(BookAppointmentCommand request, 
-            CancellationToken cancellationToken)
+        public async Task<BookAppointmentResponseDto> Handle(BookAppointmentCommand request, CancellationToken cancellationToken)
         {
-            var appointmentDateTime = request.RequestDto.Date.Date + request.RequestDto.Time;
+            var dto = request.RequestDto;
 
             var appointment = new Appointment
             {
-                PatientId = request.RequestDto.PatientId,
-                DoctorId = request.RequestDto.DoctorId,
-                AppointmentDate = appointmentDateTime,
-                Status = AppointmentStatus.Pending
+                PatientId = dto.PatientId,
+                DoctorId = dto.DoctorId,
+                Date = dto.Date.Date,
+                Reason = dto.Reason,
+                Status = AppointmentStatus.Pending,
+                CreatedAt = DateTime.Now
             };
 
-            var newAppointment = await _appointmentService.CreateAppointment(appointment);
-            return _mapper.Map<BookAppointmentResponseDto>(newAppointment);
+            var result = await _appointmentService.CreateAppointment(appointment);
+
+            return _mapper.Map<BookAppointmentResponseDto>(result);
         }
     }
 

@@ -30,28 +30,30 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
 
         public async Task<LoginResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
-            var userId = await _refreshTokenService.ValidateRefreshToken(request.RefreshToken, ipAddress);
+            var ip = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+
+            var userId = await _refreshTokenService.ValidateRefreshToken(request.RefreshToken, ip);
             if (userId == null)
                 throw new UnauthorizedAccessException("Invalid refresh token");
 
             var user = await _userService.GetUserById(userId.Value);
-
             var roles = await _userRoleService.GetUserRoles(userId.Value);
 
-            var newAccessToken = _jwtService.GenerateAccessToken(user, roles);
-            var newRefreshToken = _jwtService.GenerateRefreshToken();
-            await _refreshTokenService.RevokeToken(request.RefreshToken, ipAddress);
-            await _refreshTokenService.SaveRefreshToken(user.UserId, newRefreshToken, ipAddress);
-            var vnZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
-            var vnTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow.AddMinutes(5), vnZone);
+            // Generate tokens
+            var newAccess = _jwtService.GenerateAccessToken(user, roles);
+            var newRefresh = _jwtService.GenerateRefreshToken();
 
+            // Rotation an toàn: revoke token cũ và gắn link sang token mới
+            await _refreshTokenService.RevokeToken(request.RefreshToken, ip, newRefresh);
+
+            // Lưu refresh token mới
+            await _refreshTokenService.SaveRefreshToken(user.UserId, newRefresh, ip);
 
             return new LoginResponseDto
             {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
-                ExpiresAt = vnTime.ToString("dd/MM/yyyy HH:mm:ss")
+                AccessToken = newAccess,
+                RefreshToken = newRefresh,
+                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("dd-MM-yyyy HH:mm:ss")
             };
         }
     }

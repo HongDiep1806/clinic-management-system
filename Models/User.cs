@@ -1,7 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization; 
+
 
 namespace ClinicManagementSystem.Models
 {
+
     public class User
     {
         public int UserId { get; set; }
@@ -16,18 +19,25 @@ namespace ClinicManagementSystem.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        [JsonIgnore] // tránh serialize navigation ngược
         public Department Department { get; set; }
 
+        [JsonIgnore]
         [InverseProperty("Patient")]
-        public ICollection<Appointment> AppointmentsAsPatient { get; set; }
+        public ICollection<Appointment>? AppointmentsAsPatient { get; set; }
 
+        [JsonIgnore]
         [InverseProperty("Doctor")]
-        public ICollection<Appointment> AppointmentsAsDoctor { get; set; }
+        public ICollection<Appointment>? AppointmentsAsDoctor { get; set; }
 
+        [JsonIgnore]
         public ICollection<Schedule> Schedules { get; set; }
-        public ICollection<UserRole> UserRoles { get; set; }
-        public ICollection<RefreshToken> RefreshTokens { get; set; }
 
+        [JsonIgnore]
+        public ICollection<UserRole> UserRoles { get; set; }
+
+        [JsonIgnore]
+        public ICollection<RefreshToken> RefreshTokens { get; set; }
     }
 
 }

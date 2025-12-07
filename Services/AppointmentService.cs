@@ -8,18 +8,22 @@ namespace ClinicManagementSystem.Services
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IScheduleRepository _scheduleRepository;
+        private readonly IUserRepository _userRepository;
 
-        public AppointmentService(IAppointmentRepository appointmentRepository, IScheduleRepository scheduleRepository)
+        public AppointmentService(IAppointmentRepository appointmentRepository,  IScheduleRepository scheduleRepository, IUserRepository userRepository)
         {
             _appointmentRepository = appointmentRepository;
             _scheduleRepository = scheduleRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<Appointment> CreateAppointment(Appointment appointment)
         {
             await ValidateAppointment(appointment);
+            await SnapshotDepartment(appointment);   // << THÊM DÒNG NÀY
             return await _appointmentRepository.Create(appointment);
         }
+
 
         public async Task<Appointment> CreateAppointmentByStaff(CreateAppointmentByStaffDto dto)
         {
@@ -91,5 +95,20 @@ namespace ClinicManagementSystem.Services
             if (hasPatientConflict)
                 throw new InvalidOperationException("Patient already has an appointment on this day.");
         }
+        private async Task SnapshotDepartment(Appointment appointment)
+        {
+            if (appointment.DoctorId == null)
+                throw new InvalidOperationException("Doctor is required.");
+
+            // Lấy doctor + department từ UserRepository
+            var doctor = await _userRepository.GetByIdWithDepartment(appointment.DoctorId.Value);
+
+            if (doctor == null)
+                throw new InvalidOperationException("Doctor not found.");
+
+            appointment.DepartmentId = doctor.DepartmentId ?? 0;
+            appointment.DepartmentName = doctor.Department?.Name ?? "Unknown";
+        }
+
     }
 }

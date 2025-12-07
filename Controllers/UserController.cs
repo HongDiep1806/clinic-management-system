@@ -122,6 +122,33 @@ namespace ClinicManagementSystem.Controllers
 
             return Ok(user);
         }
+        [HttpGet("get-all-staffs")]
+        public async Task<IActionResult> GetAllReceptionists()
+        {
+            var result = await _userService.GetAllReceptionistsWithStatus();
+            return Ok(result);
+        }
+        [HttpPut("change-password/{userId}")]
+        public async Task<IActionResult> ChangePassword(int userId, [FromBody] ChangePasswordDto dto)
+        {
+            try
+            {
+                var result = await _userService.ChangePassword(userId, dto.CurrentPassword, dto.NewPassword);
+
+                if (!result)
+                    return NotFound(new { message = "User not found" });
+
+                return Ok(new { message = "Password changed successfully" });
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("INVALID_CURRENT_PASSWORD"))
+                    return BadRequest(new { message = "Current password is incorrect" });
+
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
 
 
 

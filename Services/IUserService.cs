@@ -18,10 +18,13 @@ namespace ClinicManagementSystem.Services
         Task<bool> DeleteUser(int userId);
         Task<List<dynamic>> GetAllDoctorsWithStatus();
         Task<List<dynamic>> GetAllPatientsWithStatus();
+        Task<List<dynamic>> GetAllReceptionistsWithStatus();
         Task<List<UserStatusDto>> GetUsersByRoleWithStatus(string roleName);
         Task<bool> ToggleUserStatus(int userId);
         Task<bool> RestoreUserWithNewEmail(int userId, string newEmail);
         Task<dynamic?> GetUserByIdWithStatus(int userId);
+        Task<bool> ChangePassword(int userId, string currentPassword, string newPassword);
+
 
 
 

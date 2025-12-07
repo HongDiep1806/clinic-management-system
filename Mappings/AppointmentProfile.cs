@@ -16,13 +16,24 @@ namespace ClinicManagementSystem.Mappings
 
             // DTO dùng để hiển thị chung trong bảng (Admin / Receptionist)
             CreateMap<Appointment, AppointmentDto>()
-                .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
-                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor.FullName))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("yyyy-MM-dd")))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
-                .ForMember(dest => dest.DoctorId, opt => opt.MapFrom(src => src.DoctorId));
+                 .ForMember(dest => dest.PatientName,
+                     opt => opt.MapFrom(src => src.Patient.FullName))
+                 .ForMember(dest => dest.DoctorName,
+                     opt => opt.MapFrom(src => src.Doctor.FullName))
+                 .ForMember(dest => dest.Status,
+                     opt => opt.MapFrom(src => src.Status.ToString()))
+                 .ForMember(dest => dest.Date,
+                     opt => opt.MapFrom(src => src.Date.ToString("yyyy-MM-dd")))
+                 .ForMember(dest => dest.CreatedAt,
+                     opt => opt.MapFrom(src => src.CreatedAt))
+                 .ForMember(dest => dest.DoctorId,
+                     opt => opt.MapFrom(src => src.DoctorId))
 
+                 // ⭐ SNAPSHOT FIELDS
+                 .ForMember(dest => dest.DepartmentId,
+                     opt => opt.MapFrom(src => src.DepartmentId))
+                 .ForMember(dest => dest.DepartmentName,
+                     opt => opt.MapFrom(src => src.DepartmentName));
 
 
 

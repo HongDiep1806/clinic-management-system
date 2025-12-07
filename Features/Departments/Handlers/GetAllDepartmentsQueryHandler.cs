@@ -20,7 +20,7 @@ namespace ClinicManagementSystem.Features.Departments.Handlers
         {
             var departments = await _departmentService.GetAllDepartments();
 
-            return _mapper.Map<List<DepartmentDto>>(departments);
+            return departments;
         }
     }
 }

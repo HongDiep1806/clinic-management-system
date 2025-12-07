@@ -234,6 +234,47 @@ namespace ClinicManagementSystem.Repositories
 
             return finalList;
         }
+        public async Task<List<dynamic>> GetAllReceptionistsWithStatus()
+        {
+            // 1️⃣ Lấy toàn bộ receptionist còn Active
+            var active = await _context.Users
+                .Include(u => u.UserRoles)
+                .Where(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Receptionist"))
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.FullName,
+                    u.Email,
+                    u.Phone,
+                    u.Gender,
+                    u.Address,
+                    u.DepartmentId,
+                    Status = "Active"
+                })
+                .ToListAsync();
+
+            // 2️⃣ Lấy receptionist đã deactivate trong DeletedUsers
+            var deletedIds = await _restoreContext.DeletedUsers
+                .Where(d => d.RoleName == "Receptionist")
+                .Select(d => d.UserId)
+                .ToListAsync();
+
+            // 3️⃣ Merge vào list
+            var finalList = active.Select(u => new
+            {
+                u.UserId,
+                u.FullName,
+                u.Email,
+                u.Phone,
+                u.Gender,
+                u.Address,
+                u.DepartmentId,
+                Status = deletedIds.Contains(u.UserId) ? "Inactive" : "Active"
+            }).ToList<dynamic>();
+
+            return finalList;
+        }
+
         private async Task<string?> GetRoleBeforeDeleted(int userId)
         {
             var role = await _context.UserRoles
@@ -549,6 +590,33 @@ namespace ClinicManagementSystem.Repositories
             // 3) Không tìm thấy user
             return null;
         }
+        public async Task<User?> GetByIdWithDepartment(int userId)
+        {
+            return await _context.Users
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+        }
+        public async Task<bool> ChangePasswordAsync(int userId, string currentPassword, string newPassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null) return false;
+
+            // Check current password
+            var verify = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, currentPassword);
+            if (verify != PasswordVerificationResult.Success)
+                throw new BadHttpRequestException("INVALID_CURRENT_PASSWORD", 400);
+
+            // Hash new password
+            var newHashed = _passwordHasher.HashPassword(user, newPassword);
+            user.HashPassword = newHashed;
+
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
 
 
 

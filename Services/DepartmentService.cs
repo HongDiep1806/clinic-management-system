@@ -1,4 +1,5 @@
-﻿using ClinicManagementSystem.Models;
+﻿using ClinicManagementSystem.DTOs.Department;
+using ClinicManagementSystem.Models;
 using ClinicManagementSystem.Repositories;
 
 namespace ClinicManagementSystem.Services
@@ -11,9 +12,9 @@ namespace ClinicManagementSystem.Services
         {
             _departmentRepository = departmentRepository;
         }
-        public async Task<List<Department>> GetAllDepartments()
+        public async Task<List<DepartmentDto>> GetAllDepartments()
         {
-            return await _departmentRepository.GetAllDepartments();
+            return await _departmentRepository.GetAllDepartmentsWithStatus();
         }
         public async Task<Department?> UpdateDepartment(Department dept)
         {
@@ -29,5 +30,14 @@ namespace ClinicManagementSystem.Services
             return await _departmentRepository.CreateDepartment(model);
         }
 
+        public async Task<bool> RestoreDepartment(int id)
+        {
+            return await _departmentRepository.RestoreDepartment(id);
+        }
+
+        public async Task<bool> ToggleDepartmentStatus(int id)
+        {
+            return await _departmentRepository.ToggleDepartmentStatus(id);
+        }
     }
 }

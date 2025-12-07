@@ -62,12 +62,30 @@ namespace ClinicManagementSystem.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateDepartment([FromBody] Department model)
         {
-            model.Users = new List<User>();  
+            model.Users = new List<User>();
 
             var dept = await _departmentService.CreateDepartment(model);
 
             return Ok(dept);
         }
+        [HttpPut("toggle-status/{id}")]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            try
+            {
+                var result = await _departmentService.ToggleDepartmentStatus(id);
+                return Ok(new { success = result });
+            }
+            catch (InvalidOperationException ex)
+            {
+                if (ex.Message == "DEPARTMENT_HAS_ACTIVE_DOCTORS")
+                    return Conflict(new { message = "DEPARTMENT_HAS_ACTIVE_DOCTORS" });
+
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
 
 
 

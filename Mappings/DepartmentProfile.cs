@@ -2,6 +2,7 @@
 using ClinicManagementSystem.DTOs.Appointment;
 using ClinicManagementSystem.DTOs.Department;
 using ClinicManagementSystem.Models;
+using ClinicManagementSystem.Models.Deleted;
 
 namespace ClinicManagementSystem.Mappings
 {
@@ -9,10 +10,14 @@ namespace ClinicManagementSystem.Mappings
     {
         public DepartmentProfile()
         {
+            // Map từ Department → DepartmentDto
             CreateMap<Department, DepartmentDto>()
-               .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-               .ForMember(dest => dest.DepartmentId, opt => opt.MapFrom(src => src.DepartmentId))
-               .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description));
+                .ForMember(dest => dest.Status, opt => opt.Ignore());
+            // status sẽ được set thủ công
+
+            // Map từ DeletedDepartment → DepartmentDto
+            CreateMap<DeletedDepartment, DepartmentDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Inactive"));
         }
     }
 }

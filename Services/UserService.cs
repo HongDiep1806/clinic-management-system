@@ -125,7 +125,14 @@ namespace ClinicManagementSystem.Services
             return await _userRepository.GetUserByIdWithStatus(userId);
         }
 
-
+        public async Task<List<dynamic>> GetAllReceptionistsWithStatus()
+        {
+            return await _userRepository.GetAllReceptionistsWithStatus();
+        }
+        public async Task<bool> ChangePassword(int userId, string currentPassword, string newPassword)
+        {
+            return await _userRepository.ChangePasswordAsync(userId, currentPassword, newPassword);
+        }
 
     }
 }

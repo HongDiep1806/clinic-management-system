@@ -23,6 +23,8 @@ namespace ClinicManagementSystem.Models
 
         [ForeignKey("DoctorId")]
         public User? Doctor { get; set; }    // 🔥 nullable
+        public int DepartmentId { get; set; }         // NEW SNAPSHOT
+        public string? DepartmentName { get; set; }   // 
     }
 
 }

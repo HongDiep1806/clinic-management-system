@@ -1,4 +1,5 @@
-﻿using ClinicManagementSystem.Models;
+﻿using ClinicManagementSystem.DTOs.User;
+using ClinicManagementSystem.Models;
 
 namespace ClinicManagementSystem.Services
 {
@@ -13,5 +14,19 @@ namespace ClinicManagementSystem.Services
         Task<bool> DoesDoctorExits(int doctorId);
         Task<bool> DoesPatientExists(int patientId); 
         Task<List<User>> GetUsersByRole(string roleName);
+        Task<User> EditUser(int userId, EditUserDto dto);
+        Task<bool> DeleteUser(int userId);
+        Task<List<dynamic>> GetAllDoctorsWithStatus();
+        Task<List<dynamic>> GetAllPatientsWithStatus();
+        Task<List<dynamic>> GetAllReceptionistsWithStatus();
+        Task<List<UserStatusDto>> GetUsersByRoleWithStatus(string roleName);
+        Task<bool> ToggleUserStatus(int userId);
+        Task<bool> RestoreUserWithNewEmail(int userId, string newEmail);
+        Task<dynamic?> GetUserByIdWithStatus(int userId);
+        Task<bool> ChangePassword(int userId, string currentPassword, string newPassword);
+
+
+
+
     }
 }

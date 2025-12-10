@@ -7,5 +7,7 @@
         public DateTime AppointmentDate { get; set; }
         public string Date { get; set; } 
         public string Time { get; set; }
+        public DateTime CreatedAt { get; set; }
+
     }
 }

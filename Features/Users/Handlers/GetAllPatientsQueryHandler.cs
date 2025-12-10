@@ -4,9 +4,9 @@ using ClinicManagementSystem.Features.Users.Queries;
 using ClinicManagementSystem.Services;
 using MediatR;
 
-namespace ClinicManagementSystem.Features.Users.Commands
+namespace ClinicManagementSystem.Features.Users.Handlers
 {
-    public class GetAllPatientsQueryHandler: IRequestHandler<GetAllPatientsQuery, List<UserDto>>
+    public class GetAllPatientsQueryHandler : IRequestHandler<GetAllPatientsQuery, List<UserDto>>
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;

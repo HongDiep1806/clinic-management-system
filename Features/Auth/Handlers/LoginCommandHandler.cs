@@ -53,7 +53,7 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("dd-MM-yyyy HH:mm:ss")
             };
         }
     }

@@ -22,6 +22,11 @@ namespace ClinicManagementSystem.Services
             return await _scheduleRepository.CreateScheduleForDoctor(schedule);
         }
 
+        public async Task<bool> DeleteSchedule(int scheduleId)
+        {
+            return await _scheduleRepository.Delete(scheduleId);
+        }
+
         public async Task<List<Schedule>> GetSchedulesByDoctorId(int doctorId)
         {
             await EnsureUserIsDoctor(doctorId);
@@ -39,6 +44,11 @@ namespace ClinicManagementSystem.Services
             if (userRoles == null || !userRoles.Any(r => r.ToLower() == "doctor"))
                 throw new InvalidOperationException("The given user is not a doctor.");
         }
+        public async Task<List<User>> GetDoctorsByWeekday(int weekday)
+        {
+            return await _scheduleRepository.GetDoctorsByWeekday((WeekDay)weekday);
+        }
+
 
 
     }

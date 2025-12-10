@@ -29,16 +29,19 @@ namespace ClinicManagementSystem.DAL
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.Patient)
-                .WithMany(u => u.AppointmentsAsPatient)
-                .HasForeignKey(a => a.PatientId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Doctor)
                 .WithMany(u => u.AppointmentsAsDoctor)
                 .HasForeignKey(a => a.DoctorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .IsRequired(false)                         // 🔥 now nullable
+                .OnDelete(DeleteBehavior.NoAction);        // 🔥 prevent EF from blocking deletion
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Patient)
+                .WithMany(u => u.AppointmentsAsPatient)
+                .HasForeignKey(a => a.PatientId)
+                .IsRequired(false)                         // 🔥 now nullable
+                .OnDelete(DeleteBehavior.NoAction);
+
 
             modelBuilder.Entity<User>()
                 .HasMany(u => u.RefreshTokens)

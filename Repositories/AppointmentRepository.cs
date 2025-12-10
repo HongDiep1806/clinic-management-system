@@ -1,8 +1,6 @@
-﻿using Azure.Core;
-using ClinicManagementSystem.DAL;
+﻿using ClinicManagementSystem.DAL;
 using ClinicManagementSystem.Models;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ClinicManagementSystem.Repositories
 {
@@ -17,54 +15,43 @@ namespace ClinicManagementSystem.Repositories
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
-                .Include(a => a.MedicalRecords)
                 .ToListAsync();
         }
 
         public async Task<List<Appointment>> GetDoctorAppointments(int doctorId)
         {
-            var appointments = await GetAllWithIncludes();
-
-            appointments = appointments.Where(a => a.DoctorId == doctorId).ToList();
-
-            return appointments;
-
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.DoctorId == doctorId)
+                .ToListAsync();
         }
 
         public async Task<List<Appointment>> GetPatientAppointments(int patientId)
         {
-            var appointments = await GetAllWithIncludes();
-
-            appointments = appointments.Where(a => a.PatientId == patientId).ToList();
-
-            return appointments;
+            return await _context.Appointments
+                .Include(a => a.Doctor)
+                .Where(a => a.PatientId == patientId)
+                .ToListAsync();
         }
 
-        public async Task<bool> IsPatientAppointmentConflict(int patientId, DateTime dateTime)
+        // Kiểm tra bệnh nhân đặt trùng ngày
+        public async Task<bool> HasPatientAppointmentOnDate(int patientId, DateTime date)
         {
             return await _context.Appointments.AnyAsync(a =>
-                    a.PatientId == patientId &&
-                    a.AppointmentDate == dateTime &&
-                    a.Status != AppointmentStatus.Cancelled);
+                a.PatientId == patientId &&
+                a.Date.Date == date.Date &&
+                a.Status != AppointmentStatus.Cancelled
+            );
         }
-        public static TimeSpan SlotDuration = TimeSpan.FromMinutes(30);
 
-        public async Task<bool> IsDoctorAppointmentConflict(int doctorId, DateTime dateTime)
+        // Kiểm tra bác sĩ đã có lịch làm không (service sẽ gọi ScheduleRepository)
+        public async Task<bool> HasDoctorAppointmentOnDate(int doctorId, DateTime date)
         {
-            var sameDayAppointments = await _context.Appointments
-                .Where(a =>
-                    a.DoctorId == doctorId &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.AppointmentDate.Date == dateTime.Date)
-                .ToListAsync();
-
-            return sameDayAppointments.Any(a =>
-                a.AppointmentDate <= dateTime &&
-                dateTime < a.AppointmentDate + SlotDuration);
+            return await _context.Appointments.AnyAsync(a =>
+                a.DoctorId == doctorId &&
+                a.Date.Date == date.Date &&
+                a.Status != AppointmentStatus.Cancelled
+            );
         }
-
-
-
     }
-
 }

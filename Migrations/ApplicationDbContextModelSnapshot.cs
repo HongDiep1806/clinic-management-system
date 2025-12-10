@@ -30,18 +30,36 @@ namespace ClinicManagementSystem.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
-                    b.Property<DateTime>("AppointmentDate")
+                    b.Property<DateTime?>("CancelledAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("DoctorId")
+                    b.Property<DateTime?>("ConfirmedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PatientId")
+                    b.Property<string>("DepartmentName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DoctorId")
                         .HasColumnType("int");
+
+                    b.Property<int?>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("AppointmentId");
 
@@ -412,14 +430,12 @@ namespace ClinicManagementSystem.Migrations
                     b.HasOne("ClinicManagementSystem.Models.User", "Doctor")
                         .WithMany("AppointmentsAsDoctor")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("ClinicManagementSystem.Models.User", "Patient")
                         .WithMany("AppointmentsAsPatient")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Doctor");
 
@@ -440,7 +456,7 @@ namespace ClinicManagementSystem.Migrations
             modelBuilder.Entity("ClinicManagementSystem.Models.MedicalRecord", b =>
                 {
                     b.HasOne("ClinicManagementSystem.Models.Appointment", "Appointment")
-                        .WithMany("MedicalRecords")
+                        .WithMany()
                         .HasForeignKey("AppointmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -534,11 +550,6 @@ namespace ClinicManagementSystem.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ClinicManagementSystem.Models.Appointment", b =>
-                {
-                    b.Navigation("MedicalRecords");
                 });
 
             modelBuilder.Entity("ClinicManagementSystem.Models.Department", b =>

@@ -8,39 +8,43 @@ namespace ClinicManagementSystem.Services
 {
     public class RefreshTokenService : IRefreshTokenService
     {
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
-        public RefreshTokenService(IRefreshTokenRepository refreshTokenRepository)
-        {
-            _refreshTokenRepository = refreshTokenRepository;
-        }
+        private readonly IRefreshTokenRepository _repo;
 
-        public async Task RevokeToken(string token, string? ipAddress)
+        public RefreshTokenService(IRefreshTokenRepository repo)
         {
-            var refreshToken = await _refreshTokenRepository.GetByToken(token);
-            if (refreshToken == null || !refreshToken.IsActive)
-                throw new SecurityTokenException("Invalid or expired refresh token.");
-
-            refreshToken.RevokedAt = DateTime.UtcNow;
-            refreshToken.RevokedByIp = ipAddress;
-            await _refreshTokenRepository.Update(refreshToken.Id ,refreshToken);
+            _repo = repo;
         }
 
         public async Task SaveRefreshToken(int userId, string token, string ipAddress)
         {
-            await _refreshTokenRepository.Create(new RefreshToken
+            var rt = new RefreshToken
             {
                 UserId = userId,
                 Token = token,
                 CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
-                RevokedAt = null,
                 CreatedByIp = ipAddress
-            });
+            };
+
+            await _repo.Create(rt);
+        }
+
+        public async Task RevokeToken(string token, string? ipAddress, string? replacedBy = null)
+        {
+            var rt = await _repo.GetByToken(token);
+            if (rt == null || !rt.IsActive)
+                return;
+
+            rt.RevokedAt = DateTime.UtcNow;
+            rt.RevokedByIp = ipAddress;
+            rt.ReplacedByToken = replacedBy;
+
+            await _repo.Update(rt.Id, rt);
         }
 
         public async Task<int?> ValidateRefreshToken(string refreshToken, string? ipAddress)
         {
-           return await _refreshTokenRepository.ValidateRefreshToken(refreshToken, ipAddress);
+            return await _repo.ValidateRefreshToken(refreshToken, ipAddress);
         }
     }
 }

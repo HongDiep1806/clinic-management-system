@@ -1,7 +1,6 @@
 ﻿using ClinicManagementSystem.DTOs.Appointment;
 using ClinicManagementSystem.Models;
 using ClinicManagementSystem.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagementSystem.Services
 {
@@ -9,27 +8,33 @@ namespace ClinicManagementSystem.Services
     {
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IScheduleRepository _scheduleRepository;
-        public AppointmentService(IAppointmentRepository appointmentRepository, IScheduleRepository scheduleRepository)
+        private readonly IUserRepository _userRepository;
+
+        public AppointmentService(IAppointmentRepository appointmentRepository,  IScheduleRepository scheduleRepository, IUserRepository userRepository)
         {
             _appointmentRepository = appointmentRepository;
             _scheduleRepository = scheduleRepository;
+            _userRepository = userRepository;
         }
+
         public async Task<Appointment> CreateAppointment(Appointment appointment)
         {
             await ValidateAppointment(appointment);
+            await SnapshotDepartment(appointment);   // << THÊM DÒNG NÀY
             return await _appointmentRepository.Create(appointment);
         }
 
+
         public async Task<Appointment> CreateAppointmentByStaff(CreateAppointmentByStaffDto dto)
         {
-            var appointmentDateTime = dto.Date.Date + dto.Time;
-
             var appointment = new Appointment
             {
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
-                AppointmentDate = appointmentDateTime,
-                Status = AppointmentStatus.Confirmed,
+                Date = dto.Date.Date,
+                Reason = dto.Reason,
+                Status = AppointmentStatus.Pending, // staff can also create pending
+                CreatedAt = DateTime.Now
             };
 
             await ValidateAppointment(appointment);
@@ -54,40 +59,56 @@ namespace ClinicManagementSystem.Services
         public async Task<List<Appointment>> GetPatientAppointments(int patientId)
         {
             return await _appointmentRepository.GetPatientAppointments(patientId);
-
-        }
-
-        public async Task<bool> IsPatientAppointmentConflict(int patientId, DateTime dateTime)
-        {
-           return await _appointmentRepository.IsPatientAppointmentConflict(patientId, dateTime);
         }
 
         public async Task<bool> UpdateAppointment(Appointment appointment, int appointmentId)
         {
             return await _appointmentRepository.Update(appointmentId, appointment);
         }
+
         private async Task ValidateAppointment(Appointment appointment)
         {
-            var appointmentTime = appointment.AppointmentDate;
-            var weekDay = (WeekDay)Enum.Parse(typeof(WeekDay), appointmentTime.DayOfWeek.ToString());
+            var date = appointment.Date.Date;
 
-            // Check bác sĩ có trực không
-            var schedule = await _scheduleRepository.GetDoctorScheduleAtTime(
-                appointment.DoctorId, weekDay, appointmentTime.TimeOfDay);
+            if (appointment.DoctorId == null)
+                throw new InvalidOperationException("Doctor is required.");
+
+            if (appointment.PatientId == null)
+                throw new InvalidOperationException("Patient is required.");
+
+            int doctorId = appointment.DoctorId.Value;
+            int patientId = appointment.PatientId.Value;
+
+            // 1. Doctor must work on this day
+            var weekDay = (WeekDay)Enum.Parse(typeof(WeekDay), date.DayOfWeek.ToString());
+            var schedule = await _scheduleRepository.GetDoctorScheduleAtDay(doctorId, weekDay);
 
             if (schedule == null)
-                throw new InvalidOperationException("Doctor is not scheduled to work at this time.");
+                throw new InvalidOperationException("Doctor is not scheduled to work on this day.");
 
-            // Check bệnh nhân không trùng lịch
-            if (await _appointmentRepository.IsPatientAppointmentConflict(appointment.PatientId, appointmentTime))
-                throw new InvalidOperationException("Patient already has an appointment at this time.");
+            // 2. Patient cannot book 2 appointments on same day
+            bool hasPatientConflict = await _appointmentRepository.HasPatientAppointmentOnDate(
+                patientId,
+                date
+            );
 
-            // Check bác sĩ không bị double-book
-            if (await _appointmentRepository.IsDoctorAppointmentConflict(appointment.DoctorId, appointmentTime))
-                throw new InvalidOperationException("Doctor already has an appointment at this time.");
+            if (hasPatientConflict)
+                throw new InvalidOperationException("Patient already has an appointment on this day.");
         }
+        private async Task SnapshotDepartment(Appointment appointment)
+        {
+            if (appointment.DoctorId == null)
+                throw new InvalidOperationException("Doctor is required.");
 
+            // Lấy doctor + department từ UserRepository
+            var doctor = await _userRepository.GetByIdWithDepartment(appointment.DoctorId.Value);
 
+            if (doctor == null)
+                throw new InvalidOperationException("Doctor not found.");
+
+            appointment.DepartmentId = doctor.DepartmentId ?? 0;
+            appointment.DepartmentName = doctor.Department?.Name ?? "Unknown";
+        }
 
     }
 }

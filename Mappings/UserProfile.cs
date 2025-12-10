@@ -31,6 +31,11 @@ namespace ClinicManagementSystem.Mappings
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.UserRoles.First().Role.RoleName))
                 .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : null));
 
+            CreateMap<EditUserDto, User>()
+                .ForMember(dest => dest.HashPassword, opt => opt.Ignore()) // Password xử lý riêng trong handler
+                .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())     // Không sửa CreatedAt
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+
         }
     }
 }

@@ -260,21 +260,26 @@ namespace ClinicManagementSystem
 
             var app = builder.Build();
 
-            // Luôn bật Swagger
+            // Always enable Swagger for production
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            // CORS
-            app.UseCors("AllowVueApp");
+            // Fix Swagger on Railway
+            app.UsePathBase("/");
 
-            // ⚠ KHÔNG bật HTTPS cho Somee
-            // app.UseHttpsRedirection();
+            app.UseCors("AllowVueApp");
 
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // Force binding port for Railway
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+            app.Urls.Add($"http://0.0.0.0:{port}");
+
             app.MapControllers();
+
             app.Run();
+
 
         }
     }

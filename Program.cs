@@ -273,7 +273,7 @@ namespace ClinicManagementSystem
             app.UseAuthorization();
 
             // Force binding port for Railway
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
             app.Urls.Clear();   // <- Railway cần dòng này
             app.Urls.Add($"http://0.0.0.0:{port}");
 

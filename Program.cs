@@ -20,59 +20,215 @@ namespace ClinicManagementSystem
     {
         public static void Main(string[] args)
         {
+            //        var builder = WebApplication.CreateBuilder(args);
+
+            //        // Add services to the container.
+            //        builder.Services.AddControllers();
+            //        builder.Services.AddEndpointsApiExplorer();
+            //        builder.Services.AddSwaggerGen();
+
+            //        builder.Services.AddCors(options =>
+            //        {
+            //            options.AddPolicy("AllowVueApp",
+            //                policy =>
+            //                {
+            //                    policy.WithOrigins("http://localhost:5173") // địa chỉ của frontend Vue
+            //                          .AllowAnyHeader()
+            //                          .AllowAnyMethod()
+            //                          .AllowCredentials();
+            //                });
+            //        });
+
+            //        // Add DbContext
+            //        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            //        builder.Services.AddDbContext<RestoreDbContext>(options =>
+            //            options.UseSqlServer(builder.Configuration.GetConnectionString("RestoreConnection")));
+
+            //        // Add Identity and AutoMapper
+            //        builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+            //        builder.Services.AddAutoMapper(typeof(Program));
+            //        builder.Services.AddAutoMapper(typeof(UserProfile));
+
+            //        // Add MediatR
+            //        builder.Services.AddMediatR(typeof(Program));
+            //        builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+            //        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ClinicManagementSystem.Pipeline.ValidationPipelineBehavior<,>));
+
+
+            //        // Register custom services
+            //        builder.Services.AddScoped<IUserService, UserService>();
+            //        builder.Services.AddScoped<IUserRepository, UserRepository>();
+            //        builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            //        builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            //        builder.Services.AddScoped<IRoleService, RoleService>();
+            //        builder.Services.AddScoped<IJwtService, JwtService>();
+            //        builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            //        builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+            //        builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            //        builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            //        builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            //        builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+            //        builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
+            //        builder.Services.AddScoped<IMedicineService, MedicineService>();
+            //        builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+            //        builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+            //        builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
+            //        builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            //        builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+            //        builder.Services.AddScoped<IScheduleService, ScheduleService>();
+            //        builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            //        builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            //        builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+
+
+            //        builder.Services.AddHttpContextAccessor();
+
+            //        //
+            //        builder.Services.AddSwaggerGen(options =>
+            //        {
+            //            options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            //            {
+            //                Title = "Clinic Management API",
+            //                Version = "v1"
+            //            });
+
+            //            // Bổ sung cấu hình bảo mật JWT
+            //            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            //            {
+            //                Name = "Authorization",
+            //                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+            //                Scheme = "Bearer",
+            //                BearerFormat = "JWT",
+            //                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+            //                Description = "Nhập JWT token vào đây (không cần từ 'Bearer')"
+            //            });
+
+            //            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            //{
+            //    {
+            //        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            //        {
+            //            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+            //            {
+            //                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+            //                Id = "Bearer"
+            //            }
+            //        },
+            //        Array.Empty<string>()
+            //    }
+            //});
+            //        });
+
+            //        builder.Services.AddAuthentication("Bearer")
+            //                        .AddJwtBearer("Bearer", options =>
+            //{
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = true,
+            //        ValidateAudience = true,
+            //        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            //        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            //        ValidateIssuerSigningKey = true,
+            //        ValidateLifetime = true,
+            //        ClockSkew = TimeSpan.Zero,
+            //        IssuerSigningKey = new SymmetricSecurityKey(
+            //            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
+            //    };
+            //    options.Events = new JwtBearerEvents
+            //    {
+            //        OnChallenge = context =>
+            //        {
+            //            context.HandleResponse();
+            //            context.Response.StatusCode = 401;
+            //            context.Response.ContentType = "application/json";
+            //            return context.Response.WriteAsync("{\"message\": \"Unauthorized\"}");
+            //        },
+            //        OnForbidden = context =>
+            //        {
+            //            context.Response.StatusCode = 403;
+            //            context.Response.ContentType = "application/json";
+            //            return context.Response.WriteAsync("{\"message\": \"Forbidden: Insufficient role\"}");
+            //        }
+            //    };
+            //    options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
+
+            //});
+
+
+
+
+            //        var app = builder.Build();
+            //        app.UseCors("AllowVueApp");
+
+
+            //        if (app.Environment.IsDevelopment())
+            //        {
+            //            app.UseSwagger();
+            //            app.UseSwaggerUI();
+            //        }
+            //        //middleware
+            //        app.UseMiddleware<ClinicManagementSystem.Middleware.ExceptionHandlingMiddleware>();
+
+            //        app.UseHttpsRedirection();
+            //        app.UseAuthentication();
+            //        app.UseAuthorization();
+
+            //        app.MapControllers();
+
+            //        app.Run();
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Add services
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            // CORS mở full cho hosting
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowVueApp",
-                    policy =>
-                    {
-                        policy.WithOrigins("http://localhost:5173") // địa chỉ của frontend Vue
-                              .AllowAnyHeader()
-                              .AllowAnyMethod()
-                              .AllowCredentials();
-                    });
+                options.AddPolicy("AllowVueApp", policy =>
+                {
+                    policy.SetIsOriginAllowed(_ => true)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
             });
 
-            // Add DbContext
+            // DB Somee
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddDbContext<RestoreDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("RestoreConnection")));
 
-            // Add Identity and AutoMapper
+            // Identity & DI Services (giữ nguyên)
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddAutoMapper(typeof(UserProfile));
 
-            // Add MediatR
             builder.Services.AddMediatR(typeof(Program));
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ClinicManagementSystem.Pipeline.ValidationPipelineBehavior<,>));
+            builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
+                typeof(ClinicManagementSystem.Pipeline.ValidationPipelineBehavior<,>));
 
-
-            // Register custom services
+            // Custom services
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+            builder.Services.AddScoped<IUserRoleService, UserRoleService>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
-            builder.Services.AddScoped<IUserRoleService, UserRoleService>();
             builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
             builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             builder.Services.AddScoped<IAppointmentService, AppointmentService>();
             builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
             builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
-            builder.Services.AddScoped<IMedicineService, MedicineService>();
             builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+            builder.Services.AddScoped<IMedicineService, MedicineService>();
             builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
             builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
             builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
@@ -82,102 +238,44 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
-
             builder.Services.AddHttpContextAccessor();
 
-            //
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-                {
-                    Title = "Clinic Management API",
-                    Version = "v1"
-                });
-
-                // Bổ sung cấu hình bảo mật JWT
-                options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                {
-                    Name = "Authorization",
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Description = "Nhập JWT token vào đây (không cần từ 'Bearer')"
-                });
-
-                options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-            });
-
+            // JWT Auth
             builder.Services.AddAuthentication("Bearer")
-                            .AddJwtBearer("Bearer", options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-            ValidAudience = builder.Configuration["JwtSettings:Audience"],
-            ValidateIssuerSigningKey = true,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero,
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
-        };
-        options.Events = new JwtBearerEvents
-        {
-            OnChallenge = context =>
-            {
-                context.HandleResponse();
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "application/json";
-                return context.Response.WriteAsync("{\"message\": \"Unauthorized\"}");
-            },
-            OnForbidden = context =>
-            {
-                context.Response.StatusCode = 403;
-                context.Response.ContentType = "application/json";
-                return context.Response.WriteAsync("{\"message\": \"Forbidden: Insufficient role\"}");
-            }
-        };
-        options.TokenValidationParameters.RoleClaimType = ClaimTypes.Role;
-
-    });
-
-            
-
+                .AddJwtBearer("Bearer", options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+                        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+                        ValidateIssuerSigningKey = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
+                    };
+                });
 
             var app = builder.Build();
+
+            // Luôn bật Swagger
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
+            // CORS
             app.UseCors("AllowVueApp");
 
+            // ⚠ KHÔNG bật HTTPS cho Somee
+            // app.UseHttpsRedirection();
 
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-            //middleware
-            app.UseMiddleware<ClinicManagementSystem.Middleware.ExceptionHandlingMiddleware>();
-
-            app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
-
             app.Run();
+
         }
     }
 }

@@ -265,7 +265,7 @@ namespace ClinicManagementSystem
             app.UseSwaggerUI();
 
             // Fix Swagger on Railway
-            app.UsePathBase("/");
+            //app.UsePathBase("/");
 
             app.UseCors("AllowVueApp");
 
@@ -274,7 +274,9 @@ namespace ClinicManagementSystem
 
             // Force binding port for Railway
             var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
+            app.Urls.Clear();   // <- Railway cần dòng này
             app.Urls.Add($"http://0.0.0.0:{port}");
+
 
             app.MapControllers();
 

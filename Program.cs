@@ -180,7 +180,27 @@ namespace ClinicManagementSystem
             //        app.Run();
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services
+            // =======================================================
+            // 1) CORS CHUẨN CHO COOKIE (KHÔNG DÙNG ORIGIN WILDCARD)
+            // =======================================================
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowVueApp", policy =>
+                {
+                    policy
+                        .WithOrigins(
+                            "https://clinicweb-production-e031.up.railway.app",
+                            "http://localhost:5173"
+                        )
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();  // Bắt buộc cho cookie
+                });
+            });
+
+            // =======================================================
+            // 2) Controllers + Swagger
+            // =======================================================
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -191,7 +211,6 @@ namespace ClinicManagementSystem
                     Version = "v1"
                 });
 
-                // ⭐⭐ Thêm Security Definition để hiện nút Authorize ⭐⭐
                 options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -199,54 +218,44 @@ namespace ClinicManagementSystem
                     Scheme = "Bearer",
                     BearerFormat = "JWT",
                     In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Description = "Nhập JWT token vào đây (không cần từ 'Bearer ')"
+                    Description = "Nhập token không cần chữ Bearer"
                 });
 
-                // ⭐⭐ Gắn Security Requirement cho tất cả API ⭐⭐
                 options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-    {
-        {
-            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-            {
-                Reference = new Microsoft.OpenApi.Models.OpenApiReference
                 {
-                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-            });
-
-            // CORS mở full cho hosting
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowVueApp", policy =>
-                {
-                    policy
-                        .SetIsOriginAllowed(_ => true)  
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials();
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
                 });
             });
 
-
-            // DB Somee
+            // =======================================================
+            // 3) DB — SQL Server
+            // =======================================================
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddDbContext<RestoreDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("RestoreConnection")));
 
-            // Identity & DI Services (giữ nguyên)
+            // =======================================================
+            // 4) Dependency Injection
+            // =======================================================
             builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddAutoMapper(typeof(UserProfile));
 
             builder.Services.AddMediatR(typeof(Program));
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>),
                 typeof(ClinicManagementSystem.Pipeline.ValidationPipelineBehavior<,>));
 
@@ -255,29 +264,31 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-            builder.Services.AddScoped<IRoleService, RoleService>(); 
-            builder.Services.AddScoped<IJwtService, JwtService>(); 
-            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>(); 
-            builder.Services.AddScoped<IUserRoleService, UserRoleService>(); 
-            builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>(); 
-            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>(); 
-            builder.Services.AddScoped<IAppointmentService, AppointmentService>(); 
-            builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>(); 
-            builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>(); 
-            builder.Services.AddScoped<IMedicineService, MedicineService>(); 
-            builder.Services.AddScoped<IMedicineRepository, MedicineRepository>(); 
-            builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>(); 
-            builder.Services.AddScoped<IPrescriptionService, PrescriptionService>(); 
-            builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>(); 
-            builder.Services.AddScoped<IInvoiceService, InvoiceService>(); 
-            builder.Services.AddScoped<IScheduleService, ScheduleService>(); 
-            builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>(); 
-            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); 
+            builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+            builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+            builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+            builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+            builder.Services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
+            builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
+            builder.Services.AddScoped<IMedicineService, MedicineService>();
+            builder.Services.AddScoped<IMedicineRepository, MedicineRepository>();
+            builder.Services.AddScoped<IPrescriptionRepository, PrescriptionRepository>();
+            builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
+            builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+            builder.Services.AddScoped<IScheduleService, ScheduleService>();
+            builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
             builder.Services.AddHttpContextAccessor();
 
-            // JWT Auth
+            // =======================================================
+            // 5) JWT Authentication – refresh token FROM COOKIE
+            // =======================================================
             builder.Services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
@@ -293,45 +304,44 @@ namespace ClinicManagementSystem
                         IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
                     };
+
                     options.Events = new JwtBearerEvents
                     {
                         OnMessageReceived = context =>
                         {
-                            // ⭐ Cho phép endpoint refresh chạy KHÔNG cần Authorization header
+                            // Cho phép /refresh không cần Authorization header
                             if (context.HttpContext.Request.Path.StartsWithSegments("/api/Auth/refresh"))
-                            {
                                 return Task.CompletedTask;
-                            }
 
                             return Task.CompletedTask;
                         }
                     };
-
                 });
 
             var app = builder.Build();
 
-            // Always enable Swagger for production
+            // =======================================================
+            // 6) Swagger
+            // =======================================================
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            // Fix Swagger on Railway
-            //app.UsePathBase("/");
+            // =======================================================
+            // 7) MIDDLEWARE ORDER — CỰC QUAN TRỌNG
+            // =======================================================
             app.UseRouting();
 
-
-            app.UseCors("AllowVueApp");
-            app.UseHttpsRedirection();
-
+            app.UseCors("AllowVueApp");     // ⭐ ĐÚNG VỊ TRÍ ⭐
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            // Force binding port for Railway
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Urls.Clear();   // <- Railway cần dòng này
-            app.Urls.Add($"http://0.0.0.0:{port}");
+            app.UseHttpsRedirection();
 
+            // Railway port binding
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            app.Urls.Clear();
+            app.Urls.Add($"http://0.0.0.0:{port}");
 
             app.MapControllers();
 

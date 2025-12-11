@@ -224,13 +224,11 @@ namespace ClinicManagementSystem
             {
                 options.AddPolicy("AllowVueApp", policy =>
                 {
-                    policy.WithOrigins(
-                        "https://clinicweb-production-e031.up.railway.app", // FE 
-                        "http://localhost:5173" // local dev
-                    )
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
+                    policy
+                        .SetIsOriginAllowed(_ => true)  
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
                 });
             });
 

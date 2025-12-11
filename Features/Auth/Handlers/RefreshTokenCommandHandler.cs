@@ -71,6 +71,7 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             return new LoginResponseDto
             {
                 AccessToken = newAccess,
+                RefreshToken = newRefresh,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")
             };
         }

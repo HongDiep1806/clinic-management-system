@@ -4,6 +4,7 @@ using ClinicManagementSystem.Models;
 using ClinicManagementSystem.Services;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http; // ⭐ THÊM
 
 namespace ClinicManagementSystem.Features.Auth.Handlers
 {
@@ -38,22 +39,35 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid credentials");
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, request.Password);
-            if (result == PasswordVerificationResult.Failed)
+            var checkPassword = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, request.Password);
+            if (checkPassword == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Invalid credentials");
 
             var roles = await _userRoleService.GetUserRoles(user.UserId);
             var accessToken = _jwtService.GenerateAccessToken(user, roles);
             var refreshToken = _jwtService.GenerateRefreshToken();
 
-            var ipAddress = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
-            await _refreshTokenService.SaveRefreshToken(user.UserId, refreshToken, ipAddress);
+            var ip = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+            await _refreshTokenService.SaveRefreshToken(user.UserId, refreshToken, ip);
+
+            // ⭐ Lưu refresh token vào cookie HttpOnly
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append(
+                "refreshToken",
+                refreshToken,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
 
             return new LoginResponseDto
             {
                 AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("dd-MM-yyyy HH:mm:ss")
+                // ❗ KHÔNG trả refreshToken nữa!
+                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")
             };
         }
     }

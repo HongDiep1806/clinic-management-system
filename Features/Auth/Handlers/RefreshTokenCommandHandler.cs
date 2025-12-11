@@ -2,6 +2,7 @@
 using ClinicManagementSystem.Features.Auth.Commands;
 using ClinicManagementSystem.Services;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace ClinicManagementSystem.Features.Auth.Handlers
 {
@@ -18,8 +19,7 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             IUserService userService,
             IUserRoleService userRoleService,
             IJwtService jwtService,
-            IHttpContextAccessor httpContextAccessor
-         )
+            IHttpContextAccessor httpContextAccessor)
         {
             _refreshTokenService = refreshTokenService;
             _userService = userService;
@@ -30,32 +30,47 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
 
         public async Task<LoginResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            var ip = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+            // ⭐ Lấy refresh token từ cookie
+            var oldRefresh = _httpContextAccessor.HttpContext!.Request.Cookies["refreshToken"];
+            if (string.IsNullOrEmpty(oldRefresh))
+                throw new UnauthorizedAccessException("Missing refresh token cookie");
 
-            var userId = await _refreshTokenService.ValidateRefreshToken(request.RefreshToken, ip);
+            var ip = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString();
+
+            // ⭐ Validate refresh token
+            var userId = await _refreshTokenService.ValidateRefreshToken(oldRefresh, ip);
             if (userId == null)
                 throw new UnauthorizedAccessException("Invalid refresh token");
 
             var user = await _userService.GetUserById(userId.Value);
             var roles = await _userRoleService.GetUserRoles(userId.Value);
 
-            // Generate tokens
+            // ⭐ Generate NEW tokens
             var newAccess = _jwtService.GenerateAccessToken(user, roles);
             var newRefresh = _jwtService.GenerateRefreshToken();
 
-            // Rotation an toàn: revoke token cũ và gắn link sang token mới
-            await _refreshTokenService.RevokeToken(request.RefreshToken, ip, newRefresh);
-
-            // Lưu refresh token mới
+            // ⭐ Rotation refresh token
+            await _refreshTokenService.RevokeToken(oldRefresh, ip, newRefresh);
             await _refreshTokenService.SaveRefreshToken(user.UserId, newRefresh, ip);
+
+            // ⭐ Set cookie mới
+            _httpContextAccessor.HttpContext.Response.Cookies.Append(
+                "refreshToken",
+                newRefresh,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTime.UtcNow.AddDays(7)
+                }
+            );
 
             return new LoginResponseDto
             {
                 AccessToken = newAccess,
-                RefreshToken = newRefresh,
-                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("dd-MM-yyyy HH:mm:ss")
+                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")
             };
         }
     }
 }
-

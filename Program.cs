@@ -291,6 +291,20 @@ namespace ClinicManagementSystem
                         IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]))
                     };
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            // ⭐ Cho phép endpoint refresh chạy KHÔNG cần Authorization header
+                            if (context.HttpContext.Request.Path.StartsWithSegments("/api/Auth/refresh"))
+                            {
+                                return Task.CompletedTask;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+
                 });
 
             var app = builder.Build();
@@ -303,6 +317,8 @@ namespace ClinicManagementSystem
             //app.UsePathBase("/");
 
             app.UseCors("AllowVueApp");
+            app.UseHttpsRedirection();
+
 
             app.UseAuthentication();
             app.UseAuthorization();

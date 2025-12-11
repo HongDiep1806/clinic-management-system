@@ -69,9 +69,10 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             return new LoginResponseDto
             {
                 AccessToken = accessToken,
-                // ❗ KHÔNG trả refreshToken nữa!
+                RefreshToken = refreshToken,  
                 ExpiresAt = DateTime.Now.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")
             };
+
         }
     }
 }

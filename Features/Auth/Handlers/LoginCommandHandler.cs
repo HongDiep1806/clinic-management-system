@@ -54,17 +54,17 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
 
 
             // ⭐ Lưu refresh token vào cookie HttpOnly
-            _httpContextAccessor.HttpContext!.Response.Cookies.Append(
-                "refreshToken",
-                refreshToken,
-                new CookieOptions
-                {
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    Expires = DateTime.UtcNow.AddDays(7)
-                }
-            );
+            //_httpContextAccessor.HttpContext!.Response.Cookies.Append(
+            //    "refreshToken",
+            //    refreshToken,
+            //    new CookieOptions
+            //    {
+            //        HttpOnly = true,
+            //        Secure = true,
+            //        SameSite = SameSiteMode.None,
+            //        Expires = DateTime.UtcNow.AddDays(7)
+            //    }
+            //);
 
             return new LoginResponseDto
             {

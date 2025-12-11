@@ -47,8 +47,11 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             var accessToken = _jwtService.GenerateAccessToken(user, roles);
             var refreshToken = _jwtService.GenerateRefreshToken();
 
-            var ip = _httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+            var ip = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+          ?? "0.0.0.0";
+
             await _refreshTokenService.SaveRefreshToken(user.UserId, refreshToken, ip);
+
 
             // ⭐ Lưu refresh token vào cookie HttpOnly
             _httpContextAccessor.HttpContext!.Response.Cookies.Append(

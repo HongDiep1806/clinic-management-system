@@ -30,12 +30,14 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
 
         public async Task<LoginResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
-            // ⭐ Lấy refresh token từ cookie
+            // ⭐ Lấy refresh token từ Cookie
             var oldRefresh = _httpContextAccessor.HttpContext!.Request.Cookies["refreshToken"];
             if (string.IsNullOrEmpty(oldRefresh))
                 throw new UnauthorizedAccessException("Missing refresh token cookie");
 
-            var ip = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress?.ToString();
+            // ⭐ IPAddress luôn có giá trị hợp lệ
+            var ip = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString()
+                     ?? "0.0.0.0";
 
             // ⭐ Validate refresh token
             var userId = await _refreshTokenService.ValidateRefreshToken(oldRefresh, ip);
@@ -45,16 +47,16 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             var user = await _userService.GetUserById(userId.Value);
             var roles = await _userRoleService.GetUserRoles(userId.Value);
 
-            // ⭐ Generate NEW tokens
+            // ⭐ Generate new tokens
             var newAccess = _jwtService.GenerateAccessToken(user, roles);
             var newRefresh = _jwtService.GenerateRefreshToken();
 
-            // ⭐ Rotation refresh token
+            // ⭐ Rotate refresh token
             await _refreshTokenService.RevokeToken(oldRefresh, ip, newRefresh);
             await _refreshTokenService.SaveRefreshToken(user.UserId, newRefresh, ip);
 
-            // ⭐ Set cookie mới
-            _httpContextAccessor.HttpContext.Response.Cookies.Append(
+            // ⭐ Update cookie
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append(
                 "refreshToken",
                 newRefresh,
                 new CookieOptions
@@ -69,7 +71,7 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             return new LoginResponseDto
             {
                 AccessToken = newAccess,
-                ExpiresAt = DateTime.Now.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")
+                ExpiresAt = DateTime.UtcNow.AddMinutes(5).ToString("yyyy-MM-dd HH:mm:ss")
             };
         }
     }

@@ -21,7 +21,6 @@ namespace ClinicManagementSystem.Controllers
         {
             var result = await _mediator.Send(command);
 
-            // ⭐ Set refreshToken cookie
             Response.Cookies.Append(
                 "refreshToken",
                 result.RefreshToken,
@@ -34,13 +33,13 @@ namespace ClinicManagementSystem.Controllers
                 }
             );
 
-            // ⭐ FE chỉ nhận 2 field này
             return Ok(new
             {
                 accessToken = result.AccessToken,
                 expiresAt = result.ExpiresAt
             });
         }
+
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()

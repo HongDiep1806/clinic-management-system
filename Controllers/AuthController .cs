@@ -21,6 +21,7 @@ namespace ClinicManagementSystem.Controllers
         {
             var result = await _mediator.Send(command);
 
+            // set cookie từ refreshToken handler trả về
             Response.Cookies.Append(
                 "refreshToken",
                 result.RefreshToken,
@@ -39,21 +40,12 @@ namespace ClinicManagementSystem.Controllers
                 expiresAt = result.ExpiresAt
             });
         }
-
 
         [HttpPost("refresh")]
         public async Task<IActionResult> Refresh()
         {
-            var refreshToken = Request.Cookies["refreshToken"];
-            if (string.IsNullOrEmpty(refreshToken))
-                return Unauthorized(new { message = "Missing refresh token" });
+            var result = await _mediator.Send(new RefreshTokenCommand());
 
-            var command = new RefreshTokenCommand(refreshToken); 
-
-            var result = await _mediator.Send(command);
-
-
-            // ⭐ Rotate cookie
             Response.Cookies.Append(
                 "refreshToken",
                 result.RefreshToken,
@@ -73,12 +65,12 @@ namespace ClinicManagementSystem.Controllers
             });
         }
 
-        [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
-        {
-            await _mediator.Send(command);
 
-            // ⭐ Delete refresh cookie
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _mediator.Send(new LogoutCommand());
+
             Response.Cookies.Delete("refreshToken", new CookieOptions
             {
                 HttpOnly = true,

@@ -39,9 +39,15 @@ namespace ClinicManagementSystem.Features.Auth.Handlers
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid credentials");
 
+            Console.WriteLine("USER FOUND: " + user.Email);
+
             var checkPassword = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, request.Password);
+
+            Console.WriteLine("VERIFY RESULT: " + checkPassword);
+            Console.WriteLine("INPUT PASSWORD: " + request.Password);
             if (checkPassword == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Invalid credentials");
+
 
             var roles = await _userRoleService.GetUserRoles(user.UserId);
             var accessToken = _jwtService.GenerateAccessToken(user, roles);

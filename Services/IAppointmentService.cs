@@ -14,5 +14,7 @@ namespace ClinicManagementSystem.Services
         Task<List<Appointment>> GetPatientAppointments(int patientId);
 
         Task<bool> UpdateAppointment(Appointment appointment, int appointmentId);
+        Task SyncExpiredAppointments();
+        Task<bool> ConfirmArrival(int appointmentId);
     }
 }

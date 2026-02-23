@@ -28,7 +28,7 @@ namespace ClinicManagementSystem.Features.Appointments.Handlers
             {
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
-                Date = dto.Date.Date,
+                Date = dto.Date,
                 Reason = dto.Reason,
                 Status = AppointmentStatus.Pending,
                 CreatedAt = DateTime.Now

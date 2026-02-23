@@ -31,7 +31,7 @@ namespace ClinicManagementSystem.Services
             {
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
-                Date = dto.Date.Date,
+                Date = dto.Date,
                 Reason = dto.Reason,
                 Status = AppointmentStatus.Pending, // staff can also create pending
                 CreatedAt = DateTime.Now
@@ -43,6 +43,7 @@ namespace ClinicManagementSystem.Services
 
         public async Task<List<Appointment>> GetAllAppointments()
         {
+            //await SyncExpiredAppointments();
             return await _appointmentRepository.GetAllWithIncludes();
         }
 
@@ -53,11 +54,13 @@ namespace ClinicManagementSystem.Services
 
         public async Task<List<Appointment>> GetDoctorAppointments(int doctorId)
         {
+            await SyncExpiredAppointments();
             return await _appointmentRepository.GetDoctorAppointments(doctorId);
         }
 
         public async Task<List<Appointment>> GetPatientAppointments(int patientId)
         {
+            await SyncExpiredAppointments();
             return await _appointmentRepository.GetPatientAppointments(patientId);
         }
 
@@ -108,6 +111,71 @@ namespace ClinicManagementSystem.Services
 
             appointment.DepartmentId = doctor.DepartmentId ?? 0;
             appointment.DepartmentName = doctor.Department?.Name ?? "Unknown";
+        }
+        public async Task SyncExpiredAppointments()
+        {
+            var today = DateTime.Today;
+
+            var allAppointments = await _appointmentRepository.GetAllWithIncludes();
+
+            var expiredAppointments = allAppointments
+                .Where(a =>
+                    (a.Status == AppointmentStatus.Pending ||
+                     a.Status == AppointmentStatus.Confirmed)
+                    && a.Date.Date < today)
+                .ToList();
+
+            foreach (var appointment in expiredAppointments)
+            {
+                appointment.Status = AppointmentStatus.NoShow;
+                await _appointmentRepository.Update(appointment.AppointmentId, appointment);
+            }
+        }
+        public async Task<bool> ConfirmArrival(int appointmentId)
+        {
+            var appointment = await _appointmentRepository.GetById(appointmentId);
+            if (appointment == null)
+                throw new InvalidOperationException("Appointment not found.");
+
+            ApplyArrivalConfirmationPolicy(appointment, DateTime.Now);
+
+            return await _appointmentRepository.Update(appointmentId, appointment);
+        }
+
+        private void ApplyArrivalConfirmationPolicy(Appointment appointment, DateTime now)
+        {
+            // Chỉ confirm được khi đang Pending
+            if (appointment.Status != AppointmentStatus.Pending)
+                throw new InvalidOperationException("Only pending appointments can be confirmed.");
+
+            // Nếu đã qua ngày -> NoShow
+            if (appointment.Date.Date < now.Date)
+            {
+                appointment.Status = AppointmentStatus.NoShow;
+                return;
+            }
+
+            // Nếu chưa tới ngày -> không cho confirm
+            if (appointment.Date.Date > now.Date)
+                throw new InvalidOperationException("Cannot confirm arrival before appointment date.");
+
+            // ===== Đúng ngày: check cutoff theo ca =====
+            // Ca suy từ giờ đại diện bạn lưu: 08:00 (morning) / 13:00 (afternoon)
+            bool isMorning = appointment.Date.Hour < 12;
+
+            // Cutoff đề xuất: 11:30 / 16:30
+            DateTime cutoff = isMorning
+                ? appointment.Date.Date.AddHours(11).AddMinutes(30)
+                : appointment.Date.Date.AddHours(16).AddMinutes(30);
+
+            if (now > cutoff)
+            {
+                appointment.Status = AppointmentStatus.NoShow;
+                return;
+            }
+
+            appointment.Status = AppointmentStatus.Confirmed;
+            appointment.ConfirmedAt = now;
         }
 
     }

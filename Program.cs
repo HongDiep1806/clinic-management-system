@@ -12,6 +12,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
+using ClinicManagementSystem.BackgroundJobs;
 
 
 namespace ClinicManagementSystem
@@ -284,6 +285,7 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 
+            builder.Services.AddHostedService<AppointmentSyncHostedService>();
             builder.Services.AddHttpContextAccessor();
 
             // =======================================================
@@ -339,9 +341,9 @@ namespace ClinicManagementSystem
             app.UseHttpsRedirection();
 
             // Railway port binding
-            var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            app.Urls.Clear();
-            app.Urls.Add($"http://0.0.0.0:{port}");
+            //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+            //app.Urls.Clear();
+            //app.Urls.Add($"http://0.0.0.0:{port}");
 
             app.MapControllers();
 

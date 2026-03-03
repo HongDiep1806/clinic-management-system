@@ -37,7 +37,7 @@ namespace ClinicManagementSystem.Controllers
             return Ok(result);
         }
         [HttpPut("update-status")]
-        [Authorize(Roles = "Admin, Receptionist")]
+        [Authorize(Roles = "Admin, Receptionist, Patient")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateAppointmentStatusRequestDto dto)
         {
             var command = new UpdateAppointmentStatusCommand(dto);

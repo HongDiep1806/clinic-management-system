@@ -1,6 +1,8 @@
 ﻿using ClinicManagementSystem.DTOs.Appointment;
 using ClinicManagementSystem.Features.Appointments.Commands;
 using ClinicManagementSystem.Features.Appointments.Queries;
+using ClinicManagementSystem.Migrations;
+using ClinicManagementSystem.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,10 +16,12 @@ namespace ClinicManagementSystem.Controllers
     public class AppointmentController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IAppointmentService _appointmentService;
 
-        public AppointmentController(IMediator mediator)
+        public AppointmentController(IMediator mediator, IAppointmentService appointmentService)
         {
             _mediator = mediator;
+            _appointmentService = appointmentService;
         }
         [HttpGet("get-all-appointments")]
         [Authorize(Roles = "Admin, Receptionist")]
@@ -37,7 +41,7 @@ namespace ClinicManagementSystem.Controllers
             return Ok(result);
         }
         [HttpPut("update-status")]
-        [Authorize(Roles = "Admin, Receptionist, Patient")]
+        [Authorize(Roles = "Admin, Receptionist, Patient, Doctor")]
         public async Task<IActionResult> UpdateStatus([FromBody] UpdateAppointmentStatusRequestDto dto)
         {
             var command = new UpdateAppointmentStatusCommand(dto);
@@ -78,6 +82,34 @@ namespace ClinicManagementSystem.Controllers
         {
             var result = await _mediator.Send(new CancelAppointmentByStaffCommand(appointmentId));
             return result ? Ok("Appointment cancelled.") : BadRequest("Failed to cancel appointment.");
+        }
+
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Doctor, Admin, Receptionist")]
+        public async Task<IActionResult> GetAppointmentById(int id)
+        {
+            var appointment = await _appointmentService.GetByIdWithIncludes(id);
+
+            if (appointment == null)
+                return NotFound();
+            var age = DateTime.Today.Year - appointment.Patient.Dob.Year;
+
+            if (appointment.Patient.Dob.Date > DateTime.Today.AddYears(-age))
+                age--;
+
+            return Ok(new
+            {
+                appointmentId = appointment.AppointmentId,
+                patientId = appointment.PatientId,
+                patientName = appointment.Patient.FullName,
+                gender = appointment.Patient.Gender,
+                dob = appointment.Patient.Dob,
+                age = age,
+                doctorName = appointment.Doctor?.FullName,
+                reason = appointment.Reason,
+                date = appointment.Date,
+                status = appointment.Status
+            });
         }
 
     }

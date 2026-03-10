@@ -13,5 +13,6 @@ namespace ClinicManagementSystem.Repositories
 
         // Optional: nếu sau này muốn kiểm tra doctor trùng ngày thì giữ lại
         Task<bool> HasDoctorAppointmentOnDate(int doctorId, DateTime date);
+        Task<Appointment?> GetByIdWithIncludes(int appointmentId);
     }
 }

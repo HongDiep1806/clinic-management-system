@@ -1,6 +1,7 @@
 ﻿using ClinicManagementSystem.DTOs.MedicalRecord;
 using ClinicManagementSystem.Features.MedicalRecords.Commands;
 using ClinicManagementSystem.Features.MedicalRecords.Queries;
+using ClinicManagementSystem.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,10 +15,12 @@ namespace ClinicManagementSystem.Controllers
     public class MedicalRecordsController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IMedicalRecordService _medicalRecordService;
 
-        public MedicalRecordsController(IMediator mediator)
+        public MedicalRecordsController(IMediator mediator, IMedicalRecordService medicalRecordService)
         {
             _mediator = mediator;
+            _medicalRecordService = medicalRecordService;
         }
 
         [HttpPost]
@@ -42,6 +45,30 @@ namespace ClinicManagementSystem.Controllers
             var patientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var result = await _mediator.Send(new GetMedicalRecordsByPatientQuery(patientId));
             return Ok(result);
+        }
+        [HttpGet("appointment/{appointmentId}")]
+        [Authorize]
+        public async Task<IActionResult> GetByAppointmentId(int appointmentId)
+        {
+            var result = await _medicalRecordService.GetMedicalRecordByAppointmentId(appointmentId);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+        [HttpGet("appointment/{appointmentId}/prescriptions")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetPrescriptionsByAppointment(int appointmentId)
+        {
+            var record = await _medicalRecordService.GetMedicalRecordByAppointmentId(appointmentId);
+
+            if (record == null)
+                return NotFound();
+
+            var recordFull = await _medicalRecordService.GetMedicalRecordByIdIncludePres(record.MedicalRecordId);
+
+            return Ok(recordFull.Prescriptions);
         }
 
 

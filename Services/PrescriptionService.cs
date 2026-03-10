@@ -14,5 +14,9 @@ namespace ClinicManagementSystem.Services
         {
             return await _prescriptionRepository.Create(prescription);
         }
+        public async Task<List<Prescription>> GetByRecordId(int recordId)
+        {
+            return await _prescriptionRepository.GetByRecordId(recordId);
+        }
     }
 }

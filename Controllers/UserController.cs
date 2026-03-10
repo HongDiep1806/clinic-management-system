@@ -10,7 +10,7 @@ namespace ClinicManagementSystem.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Roles = "Doctor,Admin,Receptionist")]
+    [Authorize(Roles = "Doctor,Admin,Receptionist, Patient")]
 
     public class UserController : ControllerBase
     {

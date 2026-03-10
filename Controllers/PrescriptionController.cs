@@ -1,6 +1,7 @@
 ﻿using ClinicManagementSystem.DTOs.Prescription;
 using ClinicManagementSystem.Features.Medicines.Queries;
 using ClinicManagementSystem.Features.Prescriptions.Commands;
+using ClinicManagementSystem.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,10 +15,12 @@ namespace ClinicManagementSystem.Controllers
     public class PrescriptionController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IPrescriptionService _prescriptionService;
 
-        public PrescriptionController(IMediator mediator)
+        public PrescriptionController(IMediator mediator, IPrescriptionService prescriptionService)
         {
             _mediator = mediator;
+            _prescriptionService = prescriptionService;
         }
 
         [HttpPost]
@@ -26,7 +29,14 @@ namespace ClinicManagementSystem.Controllers
             var result = await _mediator.Send(new CreatePrescriptionCommand(dto));
             return Ok(result);
         }
-        
+        [HttpGet("record/{recordId}")]
+        public async Task<IActionResult> GetByRecord(int recordId)
+        {
+            var result = await _prescriptionService.GetByRecordId(recordId);
+
+            return Ok(result);
+        }
+
     }
 
 }

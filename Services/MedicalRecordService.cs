@@ -31,6 +31,10 @@ namespace ClinicManagementSystem.Services
         {
             return await _medicalRecordRpository.GetMedicalRecordsByPatientId(patientId);
         }
+        public async Task<MedicalRecord> GetMedicalRecordByAppointmentId(int appointmentId)
+        {
+            return await _medicalRecordRpository.GetMedicalRecordByAppointmentId(appointmentId);
+        }
     }
 
 }

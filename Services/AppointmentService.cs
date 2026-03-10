@@ -178,5 +178,9 @@ namespace ClinicManagementSystem.Services
             appointment.ConfirmedAt = now;
         }
 
+        public async Task<Appointment?> GetByIdWithIncludes(int appointmentId)
+        {
+            return await _appointmentRepository.GetByIdWithIncludes(appointmentId);
+        }
     }
 }

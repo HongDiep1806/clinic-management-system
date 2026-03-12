@@ -9,7 +9,7 @@ namespace ClinicManagementSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin, Receptionist")]
+    [Authorize(Roles = "Admin, Receptionist, Doctor")]
     public class MedicineController : ControllerBase
     {
         private readonly IMediator _mediator;

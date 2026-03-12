@@ -1,12 +1,14 @@
 ﻿using ClinicManagementSystem.DAL;
 using ClinicManagementSystem.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagementSystem.Repositories
 {
-    public class ScheduleRepository: BaseRepository<Schedule>, IScheduleRepository
+    public class ScheduleRepository : BaseRepository<Schedule>, IScheduleRepository
     {
-        public ScheduleRepository(ApplicationDbContext context) : base(context)
+        public ScheduleRepository(ApplicationDbContext context, RestoreDbContext restoreContext)
+    : base(context, restoreContext)
         {
         }
 
@@ -39,12 +41,27 @@ namespace ClinicManagementSystem.Repositories
                 schedule.StartTime < s.EndTime
             );
         }
+        //public async Task<List<User>> GetDoctorsByWeekday(WeekDay weekday)
+        //{
+        //    return await _context.Schedules
+        //        .Where(s => s.DayOfWeek == weekday)
+        //        .Include(s => s.Doctor)               
+        //            .ThenInclude(d => d.Schedules)    
+        //        .Select(s => s.Doctor)
+        //        .Distinct()
+        //        .ToListAsync();
+        //}
         public async Task<List<User>> GetDoctorsByWeekday(WeekDay weekday)
         {
+            var deletedIds = await _restoreContext.DeletedUsers
+                .Where(d => d.RoleName == "Doctor")
+                .Select(d => d.UserId)
+                .ToListAsync();
+
             return await _context.Schedules
-                .Where(s => s.DayOfWeek == weekday)
-                .Include(s => s.Doctor)               
-                    .ThenInclude(d => d.Schedules)    
+                .Where(s => s.DayOfWeek == weekday
+                            && !deletedIds.Contains(s.Doctor.UserId))
+                .Include(s => s.Doctor)
                 .Select(s => s.Doctor)
                 .Distinct()
                 .ToListAsync();
@@ -55,8 +72,7 @@ namespace ClinicManagementSystem.Repositories
             return await _context.Schedules
                 .FirstOrDefaultAsync(s =>
                     s.DoctorId == doctorId &&
-                    s.DayOfWeek == day
-                );
+                    s.DayOfWeek == day);
         }
 
 

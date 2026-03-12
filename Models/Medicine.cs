@@ -1,4 +1,6 @@
-﻿namespace ClinicManagementSystem.Models
+﻿using System.Text.Json.Serialization;
+
+namespace ClinicManagementSystem.Models
 {
     public class Medicine
     {
@@ -7,6 +9,7 @@
         public string Unit { get; set; }
         public int QuantityInStock { get; set; }
         public float Price { get; set; }
+        [JsonIgnore]
 
         public ICollection<Prescription> Prescriptions { get; set; }
     }

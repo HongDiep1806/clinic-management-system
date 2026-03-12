@@ -6,5 +6,8 @@ namespace ClinicManagementSystem.Repositories
     {
         Task<MedicalRecord> GetMedicalRecordByIdIncludePres (int recordId);
         Task<List<MedicalRecord>> GetMedicalRecordsByPatientId(int patientId);
+        Task<MedicalRecord> GetMedicalRecordByAppointmentId(int appointmentId);
+        Task<List<MedicalRecord>> GetMedicalRecordsByDoctorId(int doctorId);
+
     }
 }

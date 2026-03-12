@@ -53,5 +53,13 @@ namespace ClinicManagementSystem.Repositories
                 a.Status != AppointmentStatus.Cancelled
             );
         }
+
+        public async Task<Appointment?> GetByIdWithIncludes(int appointmentId)
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId);
+        }
     }
 }

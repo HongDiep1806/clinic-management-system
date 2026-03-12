@@ -241,8 +241,11 @@ namespace ClinicManagementSystem
             // =======================================================
             // 3) DB — SQL Server
             // =======================================================
+            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
+            //    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    sqlOptions => sqlOptions.CommandTimeout(60)));  // Tăng timeout lên 60 giây
 
             builder.Services.AddDbContext<RestoreDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("RestoreConnection")));

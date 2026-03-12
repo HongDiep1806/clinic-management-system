@@ -83,8 +83,10 @@ namespace ClinicManagementSystem.Services
             int patientId = appointment.PatientId.Value;
 
             // 1. Doctor must work on this day
-            var weekDay = (WeekDay)Enum.Parse(typeof(WeekDay), date.DayOfWeek.ToString());
-            var schedule = await _scheduleRepository.GetDoctorScheduleAtDay(doctorId, weekDay);
+            var weekDay = (WeekDay)date.DayOfWeek;
+
+            var schedule = await _scheduleRepository
+                .GetDoctorScheduleAtDay(doctorId, weekDay);
 
             if (schedule == null)
                 throw new InvalidOperationException("Doctor is not scheduled to work on this day.");
@@ -178,5 +180,9 @@ namespace ClinicManagementSystem.Services
             appointment.ConfirmedAt = now;
         }
 
+        public async Task<Appointment?> GetByIdWithIncludes(int appointmentId)
+        {
+            return await _appointmentRepository.GetByIdWithIncludes(appointmentId);
+        }
     }
 }

@@ -28,8 +28,25 @@ namespace ClinicManagementSystem.Features.MedicalRecords.Handlers
         {
             var appointment = await _appointmentService.GetAppointmentById(request.RequestDto.AppointmentId);
             if (appointment == null)
+            {
                 throw new KeyNotFoundException("Appointment not found");
 
+            }
+            if (appointment.Status != AppointmentStatus.Confirmed)
+            {
+                throw new InvalidOperationException("Medical record can only be created for confirmed appointments");
+
+            }
+            var existingRecord =
+                await _medicalRecordService.GetMedicalRecordByAppointmentId(
+                request.RequestDto.AppointmentId);
+
+            if (existingRecord != null)
+            {
+                throw new InvalidOperationException(
+                    "Medical record already exists for this appointment"
+                );
+            }
             var record = _mapper.Map<MedicalRecord>(request.RequestDto);
             record.CreatedAt = DateTime.UtcNow;
 

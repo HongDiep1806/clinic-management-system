@@ -18,5 +18,9 @@ namespace ClinicManagementSystem.Services
         {
             return await _prescriptionRepository.GetByRecordId(recordId);
         }
+        public async Task<bool> DeletePrescription(int id)
+        {
+            return await _prescriptionRepository.DeletePrescription(id);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ClinicManagementSystem.DTOs.MedicalRecord;
 using ClinicManagementSystem.Features.MedicalRecords.Commands;
 using ClinicManagementSystem.Features.MedicalRecords.Queries;
+using ClinicManagementSystem.Models;
 using ClinicManagementSystem.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,6 +47,16 @@ namespace ClinicManagementSystem.Controllers
             var result = await _mediator.Send(new GetMedicalRecordsByPatientQuery(patientId));
             return Ok(result);
         }
+        [HttpGet("doctor/my-records")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetDoctorMedicalRecords()
+        {
+            var doctorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var records = await _medicalRecordService.GetMedicalRecordsByDoctorId(doctorId);
+
+            return Ok(records);
+        }
         [HttpGet("appointment/{appointmentId}")]
         [Authorize]
         public async Task<IActionResult> GetByAppointmentId(int appointmentId)
@@ -70,7 +81,35 @@ namespace ClinicManagementSystem.Controllers
 
             return Ok(recordFull.Prescriptions);
         }
+        [HttpGet("{id}/details")]
+        public async Task<IActionResult> GetMedicalRecordById(int id)
+        {
+            var record = await _medicalRecordService.GetMedicalRecordByIdIncludePres(id);
 
+            if (record == null)
+                return NotFound();
+
+            return Ok(record);
+        }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateMedicalRecord(int id, [FromBody] UpdateMedicalRecordDto dto)
+        {
+            var record = await _medicalRecordService.GetMedicalRecordById(id);
+
+            if (record == null)
+                return NotFound();
+
+            record.DiagnosisDescription = dto.DiagnosisDescription;
+            record.Treatment = dto.Treatment;
+            record.Note = dto.Note;
+
+            var result = await _medicalRecordService.UpdateMedicalRecord(id, record);
+
+            if (!result)
+                return BadRequest();
+
+            return Ok(record);
+        }
 
     }
 }

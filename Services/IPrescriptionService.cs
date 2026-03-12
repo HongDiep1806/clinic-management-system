@@ -6,6 +6,7 @@ namespace ClinicManagementSystem.Services
     {
         Task<Prescription> CreatePrescription(Prescription prescription);
         Task<List<Prescription>> GetByRecordId(int recordId);
+        Task<bool> DeletePrescription(int id);
 
     }
 }

@@ -37,5 +37,15 @@ namespace ClinicManagementSystem.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
         }
+        public async Task<List<MedicalRecord>> GetMedicalRecordsByDoctorId(int doctorId)
+        {
+            return await _context.MedicalRecords
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Patient)   
+                .Include(r => r.Prescriptions)
+                    .ThenInclude(p => p.Medicine)
+                .Where(r => r.Appointment.DoctorId == doctorId)
+                .ToListAsync();
+        }
     }
 }

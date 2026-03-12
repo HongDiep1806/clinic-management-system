@@ -72,8 +72,7 @@ namespace ClinicManagementSystem.Repositories
             return await _context.Schedules
                 .FirstOrDefaultAsync(s =>
                     s.DoctorId == doctorId &&
-                    s.DayOfWeek == day
-                );
+                    s.DayOfWeek == day);
         }
 
 

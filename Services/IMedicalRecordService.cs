@@ -9,5 +9,7 @@ namespace ClinicManagementSystem.Services
         Task<MedicalRecord> GetMedicalRecordByIdIncludePres(int recordId);  
         Task<List<MedicalRecord>> GetMedicalRecordsByPatientId(int patientId);
         Task<MedicalRecord> GetMedicalRecordByAppointmentId(int appointmentId);
+        Task<bool> UpdateMedicalRecord(int id, MedicalRecord medicalRecord);
+        Task<List<MedicalRecord>> GetMedicalRecordsByDoctorId(int doctorId);
     }
 }

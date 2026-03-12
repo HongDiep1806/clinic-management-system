@@ -36,6 +36,16 @@ namespace ClinicManagementSystem.Controllers
 
             return Ok(result);
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePrescription(int id)
+        {
+            var result = await _prescriptionService.DeletePrescription(id);
+
+            if (!result)
+                return NotFound();
+
+            return Ok(new { message = "Prescription deleted successfully" });
+        }
 
     }
 

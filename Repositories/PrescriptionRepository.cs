@@ -16,5 +16,18 @@ namespace ClinicManagementSystem.Repositories
                 .Where(p => p.RecordId == recordId)
                 .ToListAsync();
         }
+        public async Task<bool> DeletePrescription(int id)
+        {
+            var prescription = await _context.Prescriptions.FindAsync(id);
+
+            if (prescription == null)
+                return false;
+
+            _context.Prescriptions.Remove(prescription);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

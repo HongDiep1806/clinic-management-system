@@ -36,9 +36,20 @@ namespace ClinicManagementSystem.Controllers
         [Authorize(Roles = "Patient, Admin, Receptionist")]
         public async Task<IActionResult> Book([FromBody] BookAppointmentRequestDto dto)
         {
-            var command = new BookAppointmentCommand(dto);
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            try
+            {
+                var command = new BookAppointmentCommand(dto);
+                var result = await _mediator.Send(command);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
         }
         [HttpPut("update-status")]
         [Authorize(Roles = "Admin, Receptionist, Patient, Doctor")]

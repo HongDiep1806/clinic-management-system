@@ -71,7 +71,7 @@ namespace ClinicManagementSystem.Services
 
         private async Task ValidateAppointment(Appointment appointment)
         {
-            var date = appointment.Date.Date;
+            var date = appointment.Date;
 
             if (appointment.DoctorId == null)
                 throw new InvalidOperationException("Doctor is required.");
@@ -83,7 +83,7 @@ namespace ClinicManagementSystem.Services
             int patientId = appointment.PatientId.Value;
 
             // 1. Doctor must work on this day
-            var weekDay = (WeekDay)date.DayOfWeek;
+            var weekDay = (WeekDay)(((int)date.DayOfWeek + 6) % 7);
 
             var schedule = await _scheduleRepository
                 .GetDoctorScheduleAtDay(doctorId, weekDay);

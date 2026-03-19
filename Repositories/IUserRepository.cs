@@ -16,6 +16,7 @@ namespace ClinicManagementSystem.Repositories
         Task<User> EditUser(int userId, EditUserDto dto);
         Task<bool> DeleteUser(int userId);
         Task<List<dynamic>> GetAllPatientsWithStatus();
+        Task<User?> GetByResetToken(string token);
 
         Task<List<dynamic>> GetAllDoctorsWithStatus();
         Task<List<dynamic>> GetAllReceptionistsWithStatus();

@@ -180,6 +180,13 @@ namespace ClinicManagementSystem
 
             //        app.Run();
             var builder = WebApplication.CreateBuilder(args);
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(443, listenOptions =>
+                {
+                    listenOptions.UseHttps("clinic.sys.p12", "changeit");
+                });
+            });
 
             // =======================================================
             // 1) CORS CHUẨN CHO COOKIE (KHÔNG DÙNG ORIGIN WILDCARD)
@@ -189,10 +196,11 @@ namespace ClinicManagementSystem
                 options.AddPolicy("AllowVueApp", policy =>
                 {
                     policy
-                        .WithOrigins(
-                            "https://clinicweb-production-e031.up.railway.app",
-                            "http://localhost:5173"
-                        )
+                       .WithOrigins(
+                        "https://clinic.sys", 
+                        "http://clinic.sys",
+                        "http://localhost:5173"
+                    )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();  // Bắt buộc cho cookie
@@ -287,6 +295,7 @@ namespace ClinicManagementSystem
             builder.Services.AddScoped<IScheduleRepository, ScheduleRepository>();
             builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddHostedService<AppointmentSyncHostedService>();
             builder.Services.AddHttpContextAccessor();
@@ -336,22 +345,24 @@ namespace ClinicManagementSystem
             // =======================================================
             app.UseRouting();
 
-            app.UseCors("AllowVueApp");     // ⭐ ĐÚNG VỊ TRÍ ⭐
+            // ⭐ phải ở đây
+
+            app.UseCors("AllowVueApp");
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseHttpsRedirection();
-
-            // Railway port binding
-            //var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-            //app.Urls.Clear();
-            //app.Urls.Add($"http://0.0.0.0:{port}");
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
 
             app.MapControllers();
 
-            app.Run();
+            app.MapFallbackToFile("index.html");
 
+           
+
+
+            app.Run();
 
         }
     }

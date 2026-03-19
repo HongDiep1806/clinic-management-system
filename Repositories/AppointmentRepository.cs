@@ -40,6 +40,7 @@ namespace ClinicManagementSystem.Repositories
             return await _context.Appointments.AnyAsync(a =>
                 a.PatientId == patientId &&
                 a.Date.Date == date.Date &&
+                a.Date.Hour == date.Hour &&
                 a.Status != AppointmentStatus.Cancelled
             );
         }

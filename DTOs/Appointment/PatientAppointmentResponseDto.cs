@@ -20,6 +20,7 @@
         public int DepartmentId { get; set; }
         public string? DepartmentName { get; set; }
 
-        public DateTime CreatedAt { get; set; }   // Queue ordering
+        public DateTime CreatedAt { get; set; }   
+        public string? Reason { get; set; }
     }
 }

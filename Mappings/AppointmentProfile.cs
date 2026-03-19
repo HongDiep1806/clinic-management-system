@@ -43,7 +43,8 @@ namespace ClinicManagementSystem.Mappings
                 .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.Patient.FullName))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("yyyy-MM-dd")))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.Reason, opt => opt.MapFrom(src => src.Reason));
 
             // Patient xem danh sách lịch hẹn
             CreateMap<Appointment, PatientAppointmentResponseDto>()
@@ -59,6 +60,8 @@ namespace ClinicManagementSystem.Mappings
                      opt => opt.MapFrom(src => src.CreatedAt))
                  .ForMember(dest => dest.DoctorId,
                      opt => opt.MapFrom(src => src.DoctorId))
+                    .ForMember(dest => dest.Reason,
+                        opt => opt.MapFrom(src => src.Reason))
 
                  // ⭐ SNAPSHOT FIELDS
                  .ForMember(dest => dest.DepartmentId,

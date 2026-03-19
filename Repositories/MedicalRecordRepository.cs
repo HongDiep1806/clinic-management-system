@@ -25,23 +25,34 @@ namespace ClinicManagementSystem.Repositories
         {
             return await _context.MedicalRecords
                 .AsNoTracking()
-                .Include(a => a.Appointment)
+
                 .Where(r => r.Appointment.PatientId == patientId)
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Doctor)
+
+                .Include(r => r.Appointment)
+                    .ThenInclude(a => a.Patient)
+
                 .Include(r => r.Prescriptions)
-                .ThenInclude(p => p.Medicine)
+                    .ThenInclude(p => p.Medicine)
+
                 .ToListAsync();
         }
         public async Task<MedicalRecord> GetMedicalRecordByAppointmentId(int appointmentId)
         {
             return await _context.MedicalRecords
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
+     .AsNoTracking()
+     .Include(r => r.Appointment)
+         .ThenInclude(a => a.Doctor)
+     .Include(r => r.Appointment)
+         .ThenInclude(a => a.Patient)
+     .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
         }
         public async Task<List<MedicalRecord>> GetMedicalRecordsByDoctorId(int doctorId)
         {
             return await _context.MedicalRecords
                 .Include(r => r.Appointment)
-                    .ThenInclude(a => a.Patient)   
+                    .ThenInclude(a => a.Patient)
                 .Include(r => r.Prescriptions)
                     .ThenInclude(p => p.Medicine)
                 .Where(r => r.Appointment.DoctorId == doctorId)

@@ -616,6 +616,14 @@ namespace ClinicManagementSystem.Repositories
 
             return true;
         }
+        public async Task<User?> GetByResetToken(string token)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u =>
+                    u.ResetPasswordToken == token &&
+                    u.ResetTokenExpires > DateTime.UtcNow);
+        }
+
 
 
 

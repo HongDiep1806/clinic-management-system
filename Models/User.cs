@@ -38,6 +38,8 @@ namespace ClinicManagementSystem.Models
 
         [JsonIgnore]
         public ICollection<RefreshToken> RefreshTokens { get; set; }
+        public string? ResetPasswordToken { get; set; }
+        public DateTime? ResetTokenExpires { get; set; }
     }
 
 }

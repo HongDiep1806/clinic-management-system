@@ -9,5 +9,6 @@
 
         public string Date { get; set; }
         public DateTime CreatedAt { get; set; }   // Doctor thấy ai đặt trước
+        public string Reason { get; set; }
     }
 }

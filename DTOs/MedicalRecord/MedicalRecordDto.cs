@@ -1,4 +1,5 @@
-﻿using ClinicManagementSystem.DTOs.Prescription;
+﻿using ClinicManagementSystem.DTOs.Appointment;
+using ClinicManagementSystem.DTOs.Prescription;
 
 namespace ClinicManagementSystem.DTOs.MedicalRecord
 {
@@ -11,6 +12,7 @@ namespace ClinicManagementSystem.DTOs.MedicalRecord
         public string Note { get; set; }
         public DateTime CreatedAt { get; set; }
         public List<PrescriptionDto> Prescriptions { get; set; }
+        public AppointmentDto Appointment { get; set; }
 
     }
 }

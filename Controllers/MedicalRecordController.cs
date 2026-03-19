@@ -69,7 +69,7 @@ namespace ClinicManagementSystem.Controllers
             return Ok(result);
         }
         [HttpGet("appointment/{appointmentId}/prescriptions")]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Patient")]
         public async Task<IActionResult> GetPrescriptionsByAppointment(int appointmentId)
         {
             var record = await _medicalRecordService.GetMedicalRecordByAppointmentId(appointmentId);

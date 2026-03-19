@@ -1,10 +1,12 @@
-﻿using ClinicManagementSystem.DTOs.User;
+﻿using ClinicManagementSystem.DTOs.Auth;
+using ClinicManagementSystem.DTOs.User;
 using ClinicManagementSystem.Features.Users.Commands;
 using ClinicManagementSystem.Features.Users.Queries;
 using ClinicManagementSystem.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClinicManagementSystem.Controllers
 {
@@ -148,7 +150,35 @@ namespace ClinicManagementSystem.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            await _userService.ForgotPasswordAsync(dto.Email);
 
+            return Ok(new
+            {
+                message = "If the email exists, a reset link has been sent."
+            });
+        }
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            try
+            {
+                await _userService.ResetPasswordAsync(dto.Token, dto.NewPassword);
+
+                return Ok(new
+                {
+                    message = "Password reset successfully"
+                });
+            }
+            catch (BadHttpRequestException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
 
 

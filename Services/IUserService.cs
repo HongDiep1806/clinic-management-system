@@ -24,7 +24,9 @@ namespace ClinicManagementSystem.Services
         Task<bool> RestoreUserWithNewEmail(int userId, string newEmail);
         Task<dynamic?> GetUserByIdWithStatus(int userId);
         Task<bool> ChangePassword(int userId, string currentPassword, string newPassword);
-
+        Task<User?> GetByResetToken(string token);
+        Task ForgotPasswordAsync(string email);
+        Task ResetPasswordAsync(string token, string newPassword);
 
 
 

@@ -10,10 +10,15 @@ namespace ClinicManagementSystem.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly IUserRoleRepository _userRoleRepository;
-        public UserService(IUserRepository userRepository, IUserRoleRepository userRoleRepository)
+        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly IEmailService _emailService;
+        public UserService(IUserRepository userRepository, IUserRoleRepository userRoleRepository,
+            IPasswordHasher<User> passwordHasher, IEmailService emailService)
         {
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
+            _passwordHasher = passwordHasher;
+            _emailService = emailService;
         }
         public async Task<User> CreateUser(User user)
         {
@@ -133,6 +138,48 @@ namespace ClinicManagementSystem.Services
         {
             return await _userRepository.ChangePasswordAsync(userId, currentPassword, newPassword);
         }
+        public async Task<User?> GetByResetToken(string token)
+        {
+            return await _userRepository.GetByResetToken(token);
+        }
 
+        public async Task ForgotPasswordAsync(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user == null)
+                return;
+
+            var token = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+
+            user.ResetPasswordToken = token;
+            user.ResetTokenExpires = DateTime.UtcNow.AddMinutes(15);
+
+            await _userRepository.Update(user.UserId, user);
+
+            var link = $"http://localhost:5173/reset-password?token={token}";
+
+            await _emailService.SendEmailAsync(
+     user.Email,
+     "Reset Password",
+     $"<p>Click the link below to reset your password:</p><a href='{link}'>Reset Password</a>"
+ );
+        }
+        public async Task ResetPasswordAsync(string token, string newPassword)
+        {
+            var user = await _userRepository.GetByResetToken(token);
+
+            if (user == null)
+                throw new BadHttpRequestException("INVALID_OR_EXPIRED_TOKEN", 400);
+
+            var hashed = _passwordHasher.HashPassword(user, newPassword);
+
+            user.HashPassword = hashed;
+            user.ResetPasswordToken = null;
+            user.ResetTokenExpires = null;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _userRepository.Update(user.UserId, user);
+        }
     }
 }

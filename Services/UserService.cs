@@ -157,8 +157,7 @@ namespace ClinicManagementSystem.Services
 
             await _userRepository.Update(user.UserId, user);
 
-            var link = $"http://localhost:5173/reset-password?token={token}";
-
+            var link = $"https://clinic.sys/reset-password?token={token}";
             await _emailService.SendEmailAsync(
      user.Email,
      "Reset Password",
